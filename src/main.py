@@ -1,0 +1,1 @@
+# Haupteinstiegspunkt der Terminalanwendung
