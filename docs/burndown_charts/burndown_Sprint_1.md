@@ -1,13 +1,13 @@
 ```mermaid
-%%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#ff0000, #0000ff"}}}}%%
+%%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#1500ff, #c21307"}}}}%%
 
 
 xychart-beta
-    title "Sprint 1"
-    x-axis [1, 2, 3, 4, 5, 6, 7]
-    y-axis 1 --> 50
-    line "IST" [1, 3, 1, 10, 10, 10, 10]
-    line "PLAN" [1, 2, 3, 3, 4, 2, 2]
+    title "Sprint 1 Burndown"
+    x-axis ["Start", "Tag 1", "Tag 2", "Tag 3", "Tag 4", "Tag 5"]
+    y-axis "Restaufwand in Stunden" 0 --> 24
+    line "PLAN" [24, 19.2, 14.4, 9.6, 4.8, 0]
+    line "IST" [24]
 ```
 
 <span style="color:#ff0000">■</span> IST &nbsp;&nbsp; <span style="color:#0000ff">■</span> PLAN
