@@ -35,4 +35,4 @@
 - [ ] Akku 1: Phillip, Niklas  
 - [ ] Akku 2: Sascha, Benjamin  
 - [ ] Frontend: Jesse  
-- [ ] Wartung: Radu   
+- [ ] Wartung: Radu (von Niklas unterstützt)
