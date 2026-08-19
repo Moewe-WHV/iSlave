@@ -7,7 +7,7 @@ xychart-beta
     x-axis ["Start", "Tag 1", "Tag 2", "Tag 3", "Tag 4", "Tag 5"]
     y-axis "Restaufwand in Stunden" 0 --> 24
     line "PLAN" [24, 19.2, 14.4, 9.6, 4.8, 0]
-    line "IST" [24]
+    line "IST" [8, 12]
 ```
 
 <span style="color:#ff0000">■</span> IST &nbsp;&nbsp; <span style="color:#0000ff">■</span> PLAN
