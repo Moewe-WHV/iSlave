@@ -1,4 +1,4 @@
-from akku1 import Akku 
+from src.akku1 import Akku
 
 
 def test_tf01_anzeige_in_prozent():
