@@ -32,4 +32,3 @@ weitere_aufgabe = "ja"
 while weitere_aufgabe == "ja":  #Abfrage ob noch eine Aufgabe erledigt werden soll
     mein_akku.aufgabe()
     weitere_aufgabe = input("Soll noch eine weitere Aufgabe ausgeführt werden? (ja / nein)")
-
