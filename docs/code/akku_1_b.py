@@ -20,7 +20,7 @@ class Akku:
     def aufgabe(self): #Aufgabe mit festem Verbrauch
         if self.kann_aufgabe_ausfuehren():
             print("Roboter erfüllt Aufgabe...")
-            self.verbrauchen(15) #beliebiger Verbrauch
+            self.verbrauchen(15) #beliebiger Verbrauch, 15 ist ein Platzhalter  
         else:
             print("Akku zu niedrig, Aufgabe kann nicht ausgeführt werden.")
 
