@@ -1,6 +1,7 @@
 class Akku:
     max_zyklen = 500
- 
+    min_akkustand = 20
+    
     def laden(self, akkustand, batterie_laden=False):
         if akkustand < self.min_akkustand or batterie_laden:
             laden = 100 - akkustand
