@@ -1,4 +1,4 @@
-from akku_1_b import Akku  # Importiere deine Akku-Klasse aus akku.py
+from akku1 import Akku 
 
 
 def test_tf01_anzeige_in_prozent():
