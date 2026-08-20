@@ -2,7 +2,8 @@
 import akku1 
 import wartung 
 
-if "__name__" == "__main__": 
+if __name__ == "__main__": 
+    
     mein_akku = Akku(100)           #Akku objekt erstellt
     mein_akku.akkustand_anzeigen()  #Akkustand anzeigen
     weitere_aufgabe = "ja"
