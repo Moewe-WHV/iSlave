@@ -1,11 +1,10 @@
 class Akku:
-    def __init__(self, akkustand: int): #Konstruktor = Akkustand sofort gültig
+    def __init__(self, akkustand: int):
         self.akkustand = akkustand
 
-    def akkustand_anzeigen(self, akkustand: int) -> int: #Methode
-        print(f"Akkustand: {akkustand}%")
-        return akkustand
-    
-mein_akku = Akku(100) #Objekt
+    def akkustand_anzeigen(self) -> int:
+        print(f"Akkustand: {self.akkustand}%")
+        return self.akkustand
 
-print("Akkustand", mein_akku.akkustand) #Ausgabe
+mein_akku = Akku(100)
+mein_akku.akkustand_anzeigen()
