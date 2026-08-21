@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
     mein_akku = Akku()  # Akku objekt erstellt
     mein_akku.akkustand_anzeigen()  # Akkustand anzeigen
-    mein_akku.zyklen_anzeigen()  # Zyklen anzeigen
+    mein_akku.zyklen_anzeigen(mein_akku.zyklen_zaehler)  # Zyklen anzeigen
 
     weitere_aufgabe = "ja"
 
