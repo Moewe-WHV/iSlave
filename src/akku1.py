@@ -1,5 +1,5 @@
 class Akku:
-    def __init__(self, zyklen_zaehler: int = 2, akkustand: int = 90):  # Konstruktor = Akkustand sofort gültig
+    def __init__(self, akkustand: int = 90, zyklen_zaehler: int = 2):  # Konstruktor = Akkustand sofort gültig
         self.akkustand = akkustand
         self.zyklen_zaehler = zyklen_zaehler
 
@@ -31,13 +31,13 @@ class Akku:
 
     def laden(self, akkustand, batterie_laden=False):
         if self.akkustand < self.min_akkustand or batterie_laden:
-            laden = (100 - self.akkustand) / 100 
-            self.zyklen_zaehler += float(laden)
-            akkustand = 100
-            if zyklen_zaehler >= 495:
+            geladener_prozentsatz = 100 - self.akkustand
+            self.zyklen_zaehler = self.max_zyklen - geladener_prozentsatz
+            self.akkustand = 100
+            if self.zyklen_zaehler >= 495:
                 print("Achtung: Die Batterie ist fast am Ende ihrer Lebensdauer!")
-            return laden, self.zyklen_zaehler, akkustand
+            return geladener_prozentsatz, self.zyklen_zaehler, self.akkustand
 
-    def zyklen_anzeigen(self,):
-        print(f"Zyklen: {self.zyklen_zaehler}/{self.max_zyklen}")
+    def zyklen_anzeigen(self, zyklen):
+        print(f"{zyklen}/500")
 #Akku(0,100)

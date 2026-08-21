@@ -3,7 +3,6 @@ from src.wartung import (
     berechne_naechste_wartung,
     ist_wartung_faellig,
     berechne_verbleibende_tage,
-    berechne_verbleibende_tage,
     erstelle_wartungsmeldung,
 )
 
