@@ -13,11 +13,11 @@ karte = [                                   # Y
     [ 0,  0,  0,  0,  0,  0,  0,  0,  0],   # 0
     [ 0,  0,  0,  0, 14, 14, 14, 14,  0],   # 1
     [ 0,  0,  0,  0,  1,  4,  6, 13,  0],   # 2
-    [ 0,  0,  0,  0,  2,  5,  7,  8,  0],   # 3
-    [ 0, 13, 13, 13,  3, 12, 12,  9,  0],   # 4
-    [ 0, 13, 13, 13, 11, 11, 11, 10,  0],   # 5
-    [ 0, 11, 11, 11, 11, 11, 11, 11,  0],   # 6
-    [ 0, 11, 11, 11, 11, 11, 11, 11,  0],   # 7
+    [ 0, 14, 14, 14,  2,  5,  7,  8,  0],   # 3
+    [ 0, 13, 15, 13,  3, 12, 12,  9,  0],   # 4
+    [ 0, 18, 16, 13, 20, 21, 22, 10,  0],   # 5
+    [ 0, 19, 17, 11, 23, 24, 25, 11,  0],   # 6
+    [ 0, 11, 11, 11, 26, 27, 28, 11,  0],   # 7
     [ 0, 11, 11, 11, 11, 11, 11, 11,  0],   # 8
     [ 0,  0,  0,  0,  0,  0,  0,  0,  0],   # 9
 # X   0   1   2   3   4   5   6   7   8
@@ -97,7 +97,7 @@ uhr = pygame.time.Clock()
 
 # Einfügen von Tileset (in Koordinaten aufgeteilt)----------------------------------------------------------------
 SKRIPT_ORDNER = os.path.dirname(__file__) # Ordner, in dem diese .py-Datei selbst liegt
-tileset_pfad = os.path.join(SKRIPT_ORDNER, "..", "Assets", "Tilesets", "Bad(64x64).png") # Pfad zum Tileset, ausgehend vom Skript-Ordner / ".." bedeutet eine Ordnerebene nach oben
+tileset_pfad = os.path.join(SKRIPT_ORDNER, "..","..", "Assets", "Tilesets", "Bad(64x64).png") # Pfad zum Tileset, ausgehend vom Skript-Ordner / ".." bedeutet eine Ordnerebene nach oben
 tileset = pygame.image.load(tileset_pfad).convert() # convert() wandelt das geladene Bild in genau das gleiche Format wie das Fenster um
 
 def hole_tile(tileset, spalte,zeile, groesse):
@@ -107,7 +107,7 @@ def hole_tile(tileset, spalte,zeile, groesse):
 # Koordinaten vom Tileset wird auf die Karte über Zahlen festgelegt------------------------------------------------
 tile_bilder = {
     #Schwarzer Rand
-    0:  hole_tile(tileset, 4, 1, TILE_GROESSE),
+    0:  hole_tile(tileset, 4, 0, TILE_GROESSE),
     #Dusche
     1:  hole_tile(tileset, 0, 1, TILE_GROESSE),
     2:  hole_tile(tileset, 0, 2, TILE_GROESSE),
@@ -126,11 +126,28 @@ tile_bilder = {
     12: hole_tile(tileset, 2, 3, TILE_GROESSE), #dunkle Fliesen
     13: hole_tile(tileset, 3, 1, TILE_GROESSE), #Wand
     14: hole_tile(tileset, 0, 0, TILE_GROESSE), #Decke
+    #Waschbecken und Spiegel
+    15: hole_tile(tileset, 6, 0, TILE_GROESSE), #Spiegel und Hahn
+    16: hole_tile(tileset, 6, 1, TILE_GROESSE), #Becken
+    17: hole_tile(tileset, 6, 2, TILE_GROESSE), #Schatten vom Becken
+    #Toilette
+    18: hole_tile(tileset, 5, 1, TILE_GROESSE),
+    19: hole_tile(tileset, 5, 2, TILE_GROESSE), 
+    #Teppich
+    20: hole_tile(tileset, 7, 0, TILE_GROESSE),
+    21: hole_tile(tileset, 8, 0, TILE_GROESSE),
+    22: hole_tile(tileset, 9, 0, TILE_GROESSE),
+    23: hole_tile(tileset, 7, 1, TILE_GROESSE),
+    24: hole_tile(tileset, 8, 1, TILE_GROESSE),
+    25: hole_tile(tileset, 9, 1, TILE_GROESSE),
+    26: hole_tile(tileset, 7, 2, TILE_GROESSE),
+    27: hole_tile(tileset, 8, 2, TILE_GROESSE),
+    28: hole_tile(tileset, 9, 2, TILE_GROESSE),
 }
 
 # Einfügen von Charakter-Tileset auf Charakter----------------------------------------------------------------------
 
-spieler_spritesheet_pfad = os.path.join(SKRIPT_ORDNER,"..", "Assets", "Charakter", "Grundform", "Charakter_Grundform-tranzparent.png") # ".." nach dem SKRIPT_ORDNER nicht vergessen
+spieler_spritesheet_pfad = os.path.join(SKRIPT_ORDNER,"..","..", "Assets", "Charakter", "Grundform", "Charakter_Grundform-tranzparent.png") # ".." nach dem SKRIPT_ORDNER nicht vergessen
 spieler_spritesheet = pygame.image.load(spieler_spritesheet_pfad).convert_alpha() #wandelt Bild in ein Pixelformat um, dass zum Bildschirm passt
 
 def hole_bild(spritesheet, spalte, zeile , breite , hoehe): # Im Kern das Gleiche wie bei hole_tile nur dass Breite und Höhe jetzt unabhängig sind, statt beide von groesse abzuhängen.
@@ -188,7 +205,7 @@ def berechne_ziel(x, y, richtung):
 
 # Einfügen von NPC_1-Tileset auf NPC_1-----------------------------------------------------------
 
-npc_1_spritesheet_pfad = os.path.join(SKRIPT_ORDNER,"..", "Assets", "Charakter", "NPCs", "Katze-tranzparent.png") # ".." nach dem SKRIPT_ORDNER nicht vergessen
+npc_1_spritesheet_pfad = os.path.join(SKRIPT_ORDNER,"..","..", "Assets", "Charakter", "NPCs", "Katze-tranzparent.png") # ".." nach dem SKRIPT_ORDNER nicht vergessen
 npc_1_spritesheet = pygame.image.load(npc_1_spritesheet_pfad).convert_alpha() #wandelt Bild in ein Pixelformat um, dass zum Bildschirm passt
 
 def hole_bild(spritesheet, spalte, zeile , breite , hoehe): # Im Kern das Gleiche wie bei hole_tile nur dass Breite und Höhe jetzt unabhängig sind, statt beide von groesse abzuhängen.
