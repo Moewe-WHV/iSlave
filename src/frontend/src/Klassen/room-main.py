@@ -4,6 +4,7 @@ import pygame
 from tilemap import TileMap
 from spieler import Spieler
 from npc import NPC
+from trigger import TriggerManager
 
 pygame.init()
 
@@ -40,12 +41,12 @@ kollision = [
 
 # Asset-Pfade, relativ zu diesem Skript-Ordner -----------------------------------------------
 SKRIPT_ORDNER = os.path.dirname(__file__)
-tileset_pfad = os.path.join(SKRIPT_ORDNER, "..", "..", "Assets", "Tilesets", "Bad(64x64).png")
+tileset_pfad = os.path.join(SKRIPT_ORDNER,"..", "Assets", "Tilesets", "Bad(64x64).png")
 spieler_spritesheet_pfad = os.path.join(
-    SKRIPT_ORDNER, "..", "..", "Assets", "Charakter", "Hauptcharakter", "Roboter-tranzparent.png"
+    SKRIPT_ORDNER,"..", "Assets", "Charakter", "Hauptcharakter", "Roboter-tranzparent.png"
 )
 npc_spritesheet_pfad = os.path.join(
-    SKRIPT_ORDNER, "..", "..", "Assets", "Charakter", "NPCs", "Katze-tranzparent.png"
+    SKRIPT_ORDNER, "..", "Assets", "Charakter", "NPCs", "Katze-tranzparent.png"
 )
 
 # Fenstergröße lässt sich direkt aus der Karte ableiten, ganz ohne TileMap-Objekt
@@ -66,6 +67,11 @@ tilemap = TileMap(karte, kollision, tileset_pfad, TILE_GROESSE)
 spieler = Spieler(6, 8, TILE_GROESSE, spieler_spritesheet_pfad)
 npc_1 = NPC(5, 5, TILE_GROESSE, npc_spritesheet_pfad)
 
+#Trigger-----------------------------------------------------------------------------------------
+trigger_manager = TriggerManager()
+
+trigger_manager.registriere(2, 6, "Hilfe! Hier ist so viel Dreck!")
+
 # Game Loop -------------------------------------------------------------------------------------
 laeuft = True
 while laeuft:
@@ -77,6 +83,10 @@ while laeuft:
     spieler.verarbeite_eingabe(tilemap)
     spieler.aktualisiere_bewegung()
     npc_1.aktualisiere_bewegung()
+
+    trigger_manager.aktualisiere(spieler.x, spieler.y)
+    if trigger_manager.trigger_neu_ausgeloest:
+        print(trigger_manager.aktiver_trigger.text)
 
     bildschirm.fill((0, 0, 0))
     tilemap.zeichne(bildschirm)
