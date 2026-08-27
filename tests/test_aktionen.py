@@ -1,5 +1,6 @@
 from src.aktionen import RoboterAktionen
 
+
 def test_staubsauger_aktion_ausfuehren():
     roboteraktion = RoboterAktionen()
     ergebnis = roboteraktion.aktion_ausfuehren("Staubsaugeraufsätze")
@@ -9,7 +10,7 @@ def test_staubsauger_aktion_ausfuehren():
 def test_spuellmittel_aktion_ausfuehren():
     roboteraktion = RoboterAktionen()
     ergebnis = roboteraktion.aktion_ausfuehren("Spülmittel")
-    assert ergebnis == "Spülmittel"    
+    assert ergebnis == "Spülmittel"
 
 
 def test_unbekante_aktion_wird_abgelehnt():
@@ -17,5 +18,3 @@ def test_unbekante_aktion_wird_abgelehnt():
 
     ergebnis = roboteraktion.aktion_ausfuehren("Springen")
     assert ergebnis == "Aktion nicht möglich"
-
-
