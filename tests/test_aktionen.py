@@ -17,4 +17,4 @@ def test_unbekante_aktion_wird_abgelehnt():
     roboteraktion = RoboterAktionen()
 
     ergebnis = roboteraktion.aktion_ausfuehren("Springen")
-    assert ergebnis == "Aktion nicht möglich"
+    assert ergebnis == "Aktion nicht möglich!"
