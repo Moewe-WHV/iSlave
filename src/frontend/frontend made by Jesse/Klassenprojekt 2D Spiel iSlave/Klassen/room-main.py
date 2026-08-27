@@ -62,8 +62,8 @@ uhr = pygame.time.Clock()
 # Aufbau von Karte, Spieler und NPC ----------------------------------------------------------
 tilemap = TileMap(karte, kollision, tileset_pfad, TILE_GROESSE)
 
-# Spieler und NPC -----------------------------------------------------------------------------
-spieler = Spieler(2, 7, TILE_GROESSE, spieler_spritesheet_pfad)
+# Spieler und NPC Startposition-----------------------------------------------------------------------------
+spieler = Spieler(6, 8, TILE_GROESSE, spieler_spritesheet_pfad)
 npc_1 = NPC(5, 5, TILE_GROESSE, npc_spritesheet_pfad)
 
 # Game Loop -------------------------------------------------------------------------------------
