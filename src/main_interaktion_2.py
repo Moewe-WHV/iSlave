@@ -1,4 +1,4 @@
-from raumsteuerung import Raumsteuerung
+from raeume import Raumsteuerung
 from aktionen import RoboterAktionen
 
 raumsteuerung = Raumsteuerung()
