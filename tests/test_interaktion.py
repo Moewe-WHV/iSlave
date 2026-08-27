@@ -1,5 +1,7 @@
 from src.raeume import Raumsteuerung
+from src.aktionen import RoboterAktionen
 from src.interaktion import (verfuegbare_raeume_anzeigen, raum_auswaehlen, terminal_raeume_anzeigen, raum_dialog, aktion_auswaehlen) 
+
 
 def test_terminal_zeigt_verfuegbare_raeume():
     raumsteuerung = Raumsteuerung()
@@ -32,23 +34,22 @@ def test_raum_dialog_gibt_gewaehlten_raum_zurueck():
     ergebnis = raum_dialog(raumsteuerung, "Wohnzimmer")
     assert ergebnis == "Wohnzimmer"
 
-#------------------------------------ für Morgen -------------------------------
-
-class FakeAktionen:
-    gueltige_aktionen = ["Spülen", "Staubsaugen"]
-
-    def aktion_ausfuehren(self, auswahl):
-        if auswahl in self.gueltige_aktionen: 
-            return auswahl
-        return "Aktion nicht vorhanden!"
-
-
 def test_aktion_wird_an_aktionen_uebergeben():
-    aktionen = FakeAktionen()
+    aktionen = RoboterAktionen()
+    ergebnis = aktion_auswaehlen(aktionen, "Spülmittel")
+    assert ergebnis == "Spülmittel"
 
-    ergebnis = aktion_auswaehlen(aktionen, "Spülen")
+def test_aktion_auswaehlen_mit_roboter_aktionen_klasse():
+    aktionen = RoboterAktionen()
+    ergebnis = aktion_auswaehlen(aktionen, "Spülmittel")
+    assert ergebnis == "Spülmittel"
 
-    assert ergebnis == "Spülen"
+def test_aktuelle_aktion_wird_gespeichert():
+
+    aktionen = RoboterAktionen()
+    aktionen.aktion_ausfuehren("Spülmittel")
+    assert aktionen.aktuelle_aktion == "Spülmittel"
+
 
 
 

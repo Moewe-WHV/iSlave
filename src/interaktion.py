@@ -1,4 +1,6 @@
 from src.raeume import Raumsteuerung
+#from src.aktionen import RoboterAktionen
+
 
 def verfuegbare_raeume_anzeigen(raumsteuerung):
    return raumsteuerung.gueltige_raeume
@@ -27,9 +29,6 @@ def terminal_raum_dialog(raumsteuerung):
         print("Raum nicht vorhanden!")
         input("Enter drücken, um erneut einen Raum auszuwählen...")
 
-
-#------------------------------- für Morgen -------------------------------
-
 def aktion_auswaehlen(aktionen, auswahl):
     return aktionen.aktion_ausfuehren(auswahl)
 
@@ -49,9 +48,9 @@ def terminal_aktion_dialog(aktionen):
 
         ergebnis = aktion_auswaehlen(aktionen, auswahl)
 
-        if ergebnis != "Aktion nicht vorhanden!":
+        if ergebnis != "Aktion nicht möglich!":
             print(f"\nAktion ausgeführt: {ergebnis}")
             return ergebnis
-        print("Aktion nicht vorhanden!")
+        print("Aktion nicht möglich!")
         input("Enter drücken, um erneut eine Aktion auszuwählen...")
 
