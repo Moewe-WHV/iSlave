@@ -10,4 +10,4 @@ class RoboterAktionen:
             self.aktuelle_aktion = aktion
             return aktion
         else:
-            return "Aktion nicht möglich"
+            return "Aktion nicht möglich!"

@@ -19,7 +19,7 @@ def terminal_raum_dialog(raumsteuerung):
         print("\nVerfügbare Räume: ")
         print(terminal_raeume_anzeigen(raumsteuerung))
 
-        auswahl = input("\nRaum wählen: ")
+        auswahl = input("\nRaum wählen: ").strip()
 
         ergebnis = raum_dialog(raumsteuerung, auswahl)
 
@@ -47,7 +47,7 @@ def terminal_aktion_dialog(aktionen):
         print("\nVerfügbare Aktionen:")
         print("\n".join(aktionen.gueltige_aktionen))
 
-        auswahl = input("\nAktion wählen: ")
+        auswahl = input("\nAktion wählen: ").strip()
 
         ergebnis = aktion_auswaehlen(aktionen, auswahl)
 
