@@ -8,5 +8,5 @@
 + gute Kommunitkation 
 + reger Austausch und gegenseitige Unterstützung
 + Rollen werden ernst genommen 
-+ großer Erfahrungsaufbau und Lerneffekt
++ großer Erfahrungsaufbau und Lerneffektgit pu
 
