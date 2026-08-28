@@ -5,6 +5,7 @@ from tilemap import TileMap
 from spieler import Spieler
 from npc import NPC
 from trigger import TriggerManager
+from textbox import Textbox
 
 pygame.init()
 
@@ -72,6 +73,10 @@ trigger_manager = TriggerManager()
 
 trigger_manager.registriere(2, 6, "Hilfe! Hier ist so viel Dreck!")
 
+#Textbox-----------------------------------------------------------------------------------------
+
+textbox = Textbox(breite, hoehe)
+
 # Game Loop -------------------------------------------------------------------------------------
 laeuft = True
 while laeuft:
@@ -84,14 +89,19 @@ while laeuft:
     spieler.aktualisiere_bewegung()
     npc_1.aktualisiere_bewegung()
 
+    #Trigger-Check: prüft jeden Frame, ob der Spieler auf einem Trigger-Feld steht
     trigger_manager.aktualisiere(spieler.x, spieler.y)
-    if trigger_manager.trigger_neu_ausgeloest:
-        print(trigger_manager.aktiver_trigger.text)
+    
 
     bildschirm.fill((0, 0, 0))
     tilemap.zeichne(bildschirm)
     spieler.zeichne(bildschirm)
     npc_1.zeichne(bildschirm)
+
+    # Textbox ganz zuletzt zeichnen, damit sie über allem anderen liegt
+    aktueller_text = trigger_manager.aktiver_trigger.text if trigger_manager.aktiver_trigger else None
+    textbox.zeichne(bildschirm, aktueller_text)
+
     pygame.display.flip()
 
     uhr.tick(60)
