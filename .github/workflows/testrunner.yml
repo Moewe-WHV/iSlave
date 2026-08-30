@@ -1,0 +1,8 @@
+name: Test Self-Hosted Runner
+on: workflow_dispatch
+
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - run: echo "Läuft auf meinem eigenen Server, nicht bei GitHub!"
