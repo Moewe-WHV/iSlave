@@ -31,8 +31,8 @@ iSlave/
 │   ├── diagrams/                   # Alle Arten von Diagrammen 
 │   ├── protocols/                  # Sitzungsprotokolle & Daylies
 │   └── iSlave_Onboarding.md        # Onboarding-File          
-├── src/     
-|   ├── frontend/                   # Alle Arten von Diagrammen                        # Hier liegt der Code  
+├── src/                            # Hier liegt der Code  
+|   ├── frontend/                   # GUI & Assets                        
 │   └── main.py
 ├── tests/                          # Test-Skripte
 │   └── test_placeholder.py
