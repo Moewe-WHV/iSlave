@@ -34,3 +34,22 @@ Berechnung IST-Linie: Restaufwand = XX h − Gesamt geleistete Stunden (auf 0 be
 
 
 **Annahmen / offene Punkte:**
+
+
+
+Benjamin & Sasche - Nutzerverwaltung 
+
+
+
+
+
+Radu, Niklas, Phillip - Interaktion 1 
+ - 2 Befehle - 
+
+
+
+
+
+
+
+Jesse & Süheyl - Frontend
