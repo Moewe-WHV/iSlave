@@ -156,9 +156,9 @@ def zeichne_karte(bildschirm, karte):
     ):  # emurate() zeigt den Index beim Durchlauf der Schleife mit an
         for x, tile in enumerate(zeile):
             # Folgendes in den Kommentaren nur anwendbar, wenn ohne Tileset gearbeitet wird
-            ###farbe = Farben[tile]
-            ###rechteck = pygame.Rect(x * TILE_GROESSE, y * TILE_GROESSE, TILE_GROESSE, TILE_GROESSE) #pygame.Rect(x_pixel, y_pixel, breite, hoehe) erstellt ein Rechteck
-            ###pygame.draw.rect(bildschirm, farbe, rechteck) # zeichnet auf bildschirm in der farbe das rechteck
+            # farbe = Farben[tile]
+            # rechteck = pygame.Rect(x * TILE_GROESSE, y * TILE_GROESSE, TILE_GROESSE, TILE_GROESSE) #pygame.Rect(x_pixel, y_pixel, breite, hoehe) erstellt ein Rechteck
+            # pygame.draw.rect(bildschirm, farbe, rechteck) # zeichnet auf bildschirm in der farbe das rechteck
             bild = tile_bilder[tile]
             bildschirm.blit(bild, (x * TILE_GROESSE, y * TILE_GROESSE))
 
