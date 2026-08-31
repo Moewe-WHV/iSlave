@@ -10,7 +10,7 @@ def ist_wartung_faellig(wartungstermin: date, aktuelles_datum: date) -> bool:
 
 
 # def berechne_verbleibende_tage(wartungstermin: date, aktuelles_datum: date) -> int:
-#     return (wartungstermin - aktuelles_datum).days
+#     return (wartungstermin - aktuelles_datum).days                                                !!!!!! Soll das Kommentiert bleiben
 
 
 def berechne_verbleibende_tage(wartungstermin: date, aktuelles_datum: date) -> int:
