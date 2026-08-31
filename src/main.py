@@ -1,6 +1,5 @@
 # Haupteinstiegspunkt der Terminalanwendung
 from akku1 import Akku
-import wartung
 
 if __name__ == "__main__":
 
