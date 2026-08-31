@@ -47,7 +47,7 @@ assert len(karte[0]) == len(
 
 # Farben der Karte wie Wand und Boden (ohne Tileset)----------------------------------------------------------
 
-###Farben = {
+# Farben = {
 # Farben= R   G   B          0 - 255
 #    0: (34, 139, 34),       # Boden = Grün
 #    1: (105, 105, 105),     # Wand = Grau
