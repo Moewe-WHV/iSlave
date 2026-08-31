@@ -1,8 +1,9 @@
 class Akku:
-    def __init__(self, akkustand: int = 90, zyklen_zaehler: int = 2):  # Konstruktor = Akkustand sofort gültig
+    def __init__(
+        self, akkustand: int = 90, zyklen_zaehler: int = 2
+    ):  # Konstruktor = Akkustand sofort gültig
         self.akkustand = akkustand
         self.zyklen_zaehler = zyklen_zaehler
-
 
     def akkustand_anzeigen(self) -> int:  # zeigt Akkustand in Prozent
         print(f"Akkustand: {self.akkustand}%")
@@ -40,4 +41,6 @@ class Akku:
 
     def zyklen_anzeigen(self, zyklen):
         print(f"{zyklen}/500")
-#Akku(0,100)
+
+
+# Akku(0,100)
