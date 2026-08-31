@@ -1,0 +1,22 @@
+name: CI
+on:
+  push:
+    branches: [ '**' ]
+
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependencies installieren
+        run: pip install -r requirements-dev.txt
+
+      - name: Formatierung prüfen (black)
+        run: black --check src tests
+
+      - name: Linting (flake8)
+        run: flake8 src tests
+
+      - name: Tests ausführen
+        run: pytest
