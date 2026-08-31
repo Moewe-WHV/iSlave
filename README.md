@@ -3,32 +3,36 @@ Terminalanwendung (Python) zur Steuerung eines humanoiden Haushaltsroboters.
 Klassenprojekt - IBB FIAE Winter A1 – 8 Wochen, 6 Sprints.
 
 
-## Setup Windows
+
+## 🪟 Setup Windows 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements-dev.txt
 ```
-## Setup Mac
+## 🍎 Setup Mac 
 ```bash
 python -m venv .venv
 source .venv/bin/activate      
 pip install -r requirements-dev.txt
 ```
 
-## Tests
+## 🧐 Tests 
 ```bash
 pytest
 ```
 
-## Projektstruktur
+## 📁 Projektstruktur 
 ```
 iSlave/
 ├── docs/
 │   ├── burndown_charts/            # Sprint Burndown Charts
+|   ├── mockups/                    # Desgignvorlagen
 │   ├── diagrams/                   # Alle Arten von Diagrammen 
-│   └── protocols/                  # Sitzungsprotokolle (.md)
-├── src/                            # Hier liegt der Code  
+│   ├── protocols/                  # Sitzungsprotokolle & Daylies
+│   └── iSlave_Onboarding.md        # Onboarding-File          
+├── src/     
+|   ├── frontend/                   # Alle Arten von Diagrammen                        # Hier liegt der Code  
 │   └── main.py
 ├── tests/                          # Test-Skripte
 │   └── test_placeholder.py
@@ -41,7 +45,7 @@ iSlave/
 Branching-Strategie und Contribution-Regeln: siehe [CONTRIBUTING.md](CONTRIBUTING.md).  
 Bei Fragen: Tim
 
-## Team (Sprint 1)
+## 👥 Team (Sprint 1, 2, 3) 
 
 | Rolle           | Person    |
 |---              |---        |
