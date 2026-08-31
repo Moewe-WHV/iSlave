@@ -2,21 +2,6 @@
 Terminalanwendung (Python) zur Steuerung eines humanoiden Haushaltsroboters.  
 Klassenprojekt - IBB FIAE Winter A1 – 8 Wochen, 6 Sprints.
 
-
-
-## 🪟 Setup Windows 
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements-dev.txt
-```
-## 🍎 Setup Mac 
-```bash
-python -m venv .venv
-source .venv/bin/activate      
-pip install -r requirements-dev.txt
-```
-
 ## 🧐 Tests 
 ```bash
 pytest
