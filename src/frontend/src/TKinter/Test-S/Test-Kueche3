@@ -1,0 +1,341 @@
+import tkinter as tk
+from template_raum import Raum              # Alles mit template davor kann geändert werden
+from template_roboter import Roboter
+
+
+# ============================================================================
+# Bausteine ohne eigenes Verhalten: Farben & Konfiguration
+# ============================================================================
+class Farben:
+    """Reine Sammlung von Farbwerten. Enthält keine Logik, nur Konstanten,
+    damit alle anderen Klassen dieselben Farben verwenden."""
+
+    BODEN = "#efe3a3"           # helles Beige/Gelb
+    ARBEITSFLAECHE = "#b9764a"  # Braun
+    KUEHLSCHRANK = "#808080"    # Grau
+    KOCHFELD = "#000000"        # Schwarz
+    TISCH = "#b9764a"           # Braun (wie Arbeitsfläche)
+    STUHL = "#c98b5e"           # helleres Braun
+    RASTER = "#c9bd7d"
+    ROBOTER = "#2b7a0b"
+
+    HINTERGRUND_DUNKEL = "#2b2b2b"
+    HINTERGRUND_TERMINAL = "#0c0c0c"
+    HINTERGRUND_TITELLEISTE = "#3a3a3a"
+    TEXT_HELL = "white"
+    TERMINAL_TEXT = "#4be04b"
+
+
+class Konfiguration:
+    """Reine Sammlung von Größen/Stellschrauben. Auch hier: keine Logik,
+    nur Werte, die andere Klassen zum Bauen der Oberfläche brauchen."""
+
+    TILE_SIZE = 64          # Größe der Kacheln in Pixel (zb 64x64 px)
+    LEGENDE_BREITE = 190
+    TERMINAL_ZEILEN = 8     # sichtbare Zeilen im Terminal (bestimmt die Höhe automatisch)
+
+
+# ============================================================================
+# Baustein: Layout-Berechnung (reine Logik, keine tkinter-Widgets)
+# ============================================================================
+class KuechenLayout:
+    """Berechnet NUR, welche Kachel welches Möbelstück ist.
+
+    Baut daraus ein Dict {(gx, gy): (farbe, label)}. label ist nur bei der
+    jeweils mittleren Kachel eines Möbelstücks gesetzt (fürs Beschriften).
+    Diese Klasse zeichnet nichts selbst und kennt kein tkinter-Widget -
+    sie liefert nur Daten, die die RaumCanvas-Klasse später zeichnet.
+    """
+
+    def __init__(self, breite, hoehe, farben=Farben):
+        self.breite = breite
+        self.hoehe = hoehe
+        self.farben = farben
+        self.kacheln = self._berechnen()
+
+    def _berechnen(self):
+        layout = {}
+        layout.update(self._schrankzeile())
+        layout.update(self._tisch())
+        layout.update(self._stuehle())
+        return layout
+
+    def _schrankzeile(self):
+        """Kochfeld / Arbeitsfläche / Kühlschrank als Zeile links."""
+        teil = {}
+        schrank_breite = max(2, round(self.breite * 0.25))
+        kochfeld_ende = max(1, round(self.hoehe * 0.27))
+        arbeitsflaeche_ende = max(kochfeld_ende + 1, round(self.hoehe * 0.71))
+
+        for gx in range(0, schrank_breite):
+            for gy in range(0, self.hoehe):
+                if gy < kochfeld_ende:
+                    teil[(gx, gy)] = (self.farben.KOCHFELD, None)
+                elif gy < arbeitsflaeche_ende:
+                    teil[(gx, gy)] = (self.farben.ARBEITSFLAECHE, None)
+                else:
+                    teil[(gx, gy)] = (self.farben.KUEHLSCHRANK, None)
+
+        # Labels mittig in jedes der drei Segmente setzen
+        mitte_x = schrank_breite // 2
+        if kochfeld_ende > 0:
+            teil[(mitte_x, kochfeld_ende // 2)] = (self.farben.KOCHFELD, "3")
+        teil[(mitte_x, (kochfeld_ende + arbeitsflaeche_ende) // 2)] = (self.farben.ARBEITSFLAECHE, "1")
+        teil[(mitte_x, (arbeitsflaeche_ende + self.hoehe) // 2)] = (self.farben.KUEHLSCHRANK, "2")
+        return teil
+
+    def _tisch(self):
+        """Tisch rechts oben."""
+        teil = {}
+        x0 = round(self.breite * 0.55)
+        x1 = max(x0 + 1, round(self.breite * 0.85) - 1)
+        y0 = round(self.hoehe * 0.15)
+        y1 = max(y0 + 1, round(self.hoehe * 0.45) - 1)
+
+        for gx in range(x0, x1 + 1):
+            for gy in range(y0, y1 + 1):
+                teil[(gx, gy)] = (self.farben.TISCH, None)
+        teil[((x0 + x1) // 2, (y0 + y1) // 2)] = (self.farben.TISCH, "4")
+
+        # Für _stuehle() merken wir uns die Eckpunkte des Tischs
+        self._tisch_x0, self._tisch_x1 = x0, x1
+        self._tisch_y0, self._tisch_y1 = y0, y1
+        return teil
+
+    def _stuehle(self):
+        """Stühle rund um den Tisch (nur optisch, blockieren nichts)."""
+        teil = {}
+        stuehle = {
+            "6": (self._tisch_x0, self._tisch_y0 - 1),  # oben links
+            "8": (self._tisch_x1, self._tisch_y0 - 1),  # oben rechts
+            "7": (self._tisch_x0, self._tisch_y1 + 1),  # unten links
+            "5": (self._tisch_x1, self._tisch_y1 + 1),  # unten rechts
+        }
+        for label, (sx, sy) in stuehle.items():
+            if 0 <= sx < self.breite and 0 <= sy < self.hoehe:
+                teil[(sx, sy)] = (self.farben.STUHL, label)
+        return teil
+
+    def kachel_bei(self, gx, gy):
+        """Liefert (farbe, label) für eine Kachel, oder Boden-Farbe + kein Label,
+        falls dort kein Möbelstück liegt."""
+        return self.kacheln.get((gx, gy), (self.farben.BODEN, None))
+
+
+# ============================================================================
+# Baustein: Legende links
+# ============================================================================
+class LegendenPanel:
+    """Baut NUR die Legende links im Fenster auf. Bekommt einen Elternframe
+    und zeichnet dort Farb-Kästchen mit Beschriftung hinein."""
+
+    EINTRAEGE = [
+        ("ARBEITSFLAECHE", "1: Arbeitsfläche"),
+        ("KUEHLSCHRANK", "2: Kühlschrank"),
+        ("KOCHFELD", "3: Kochfeld"),
+        ("TISCH", "4: Tisch"),
+        ("STUHL", "5 – 8: Stühle"),
+    ]
+
+    def __init__(self, parent, konfiguration=Konfiguration, farben=Farben):
+        self.farben = farben
+        self.rahmen = tk.Frame(parent, width=konfiguration.LEGENDE_BREITE,
+                                bg=farben.HINTERGRUND_DUNKEL)
+        self.rahmen.pack(side="left", fill="y")
+        self.rahmen.pack_propagate(False)
+
+        self._baue_titel()
+        for farb_attribut, text in self.EINTRAEGE:
+            self._baue_eintrag(getattr(farben, farb_attribut), text)
+        self._baue_trennlinie()
+        self._baue_eintrag(farben.ROBOTER, "Roboter", ist_kreis=True)
+
+    def _baue_titel(self):
+        tk.Label(self.rahmen, text="Legende", font=("Segoe UI", 13, "bold"),
+                 fg=self.farben.TEXT_HELL, bg=self.farben.HINTERGRUND_DUNKEL
+                 ).pack(anchor="w", padx=10, pady=(15, 10))
+
+    def _baue_trennlinie(self):
+        tk.Frame(self.rahmen, bg="#555555", height=1).pack(fill="x", padx=10, pady=15)
+
+    def _baue_eintrag(self, farbe, text, ist_kreis=False):
+        """Eine einzelne Legenden-Zeile: kleines Farbsymbol + Beschriftung."""
+        zeile = tk.Frame(self.rahmen, bg=self.farben.HINTERGRUND_DUNKEL)
+        zeile.pack(anchor="w", padx=10, pady=4, fill="x")
+
+        swatch = tk.Canvas(zeile, width=18, height=18,
+                            bg=self.farben.HINTERGRUND_DUNKEL, highlightthickness=0)
+        swatch.pack(side="left")
+        if ist_kreis:
+            swatch.create_oval(2, 2, 16, 16, fill=farbe, outline="black")
+        else:
+            swatch.create_rectangle(1, 1, 17, 17, fill=farbe, outline="white")
+
+        tk.Label(zeile, text=text, fg=self.farben.TEXT_HELL,
+                 bg=self.farben.HINTERGRUND_DUNKEL,
+                 font=("Segoe UI", 10)).pack(side="left", padx=8)
+
+
+# ============================================================================
+# Baustein: Deko-Terminal unten
+# ============================================================================
+class Terminal:
+    """Baut NUR das (noch rein dekorative) Befehlsterminal unten auf.
+    Ist aktuell nicht mit dem Roboter verbunden - reine Optik."""
+
+    def __init__(self, parent, zimmer, konfiguration=Konfiguration, farben=Farben):
+        self.farben = farben
+        self.rahmen = tk.Frame(parent, bg=self.farben.HINTERGRUND_DUNKEL)
+        self.rahmen.pack(side="bottom", fill="x")
+
+        self._baue_titelleiste()
+        self._baue_textbereich(zimmer, konfiguration)
+
+    def _baue_titelleiste(self):
+        """Fenster-Look mit macOS-artigen Kreisen, rein dekorativ."""
+        titelleiste = tk.Frame(self.rahmen, bg=self.farben.HINTERGRUND_TITELLEISTE, height=26)
+        titelleiste.pack(side="top", fill="x")
+        titelleiste.pack_propagate(False)
+
+        knopf_rahmen = tk.Frame(titelleiste, bg=self.farben.HINTERGRUND_TITELLEISTE)
+        knopf_rahmen.pack(side="left", padx=8)
+        for farbe in ("#ff5f56", "#ffbd2e", "#27c93f"):
+            punkt = tk.Canvas(knopf_rahmen, width=12, height=12,
+                               bg=self.farben.HINTERGRUND_TITELLEISTE, highlightthickness=0)
+            punkt.pack(side="left", padx=3)
+            punkt.create_oval(1, 1, 11, 11, fill=farbe, outline="")
+
+        tk.Label(titelleiste, text="iSlave – Befehlsterminal", fg="#cccccc",
+                 bg=self.farben.HINTERGRUND_TITELLEISTE,
+                 font=("Consolas", 9)).pack(side="left", padx=6)
+
+    def _baue_textbereich(self, zimmer, konfiguration):
+        text_rahmen = tk.Frame(self.rahmen, bg=self.farben.HINTERGRUND_TERMINAL)
+        text_rahmen.pack(side="top", fill="both", expand=True, padx=1, pady=(0, 1))
+
+        terminal = tk.Text(
+            text_rahmen,
+            height=konfiguration.TERMINAL_ZEILEN,
+            bg=self.farben.HINTERGRUND_TERMINAL, fg=self.farben.TERMINAL_TEXT,
+            insertbackground=self.farben.TERMINAL_TEXT,
+            font=("Consolas", 10),
+            borderwidth=0, highlightthickness=0,
+            wrap="none",
+        )
+        terminal.pack(side="top", fill="both", expand=True, padx=8, pady=6)
+
+        demo_zeilen = [
+            "iSlave System Terminal v0.1",
+            "Initialisiere Raum \"Küche\"...",
+            f"Raumgröße erkannt: {zimmer.breite} x {zimmer.hoehe} Kacheln",
+            "Roboter-Status: bereit",
+            "Warte auf Befehl...",
+            "> _",
+        ]
+        terminal.insert("1.0", "\n".join(demo_zeilen))
+        terminal.configure(state="disabled")  # noch nicht steuerbar, nur Anzeige
+
+
+# ============================================================================
+# Baustein: Zeichenfläche (Kacheln + Roboter)
+# ============================================================================
+class RaumCanvas:
+    """Baut NUR die Zeichenfläche (Canvas) und zeichnet dort die Karte:
+    Kacheln aus dem KuechenLayout + den Roboter als Kreis."""
+
+    def __init__(self, parent, zimmer, layout, roboter,
+                 konfiguration=Konfiguration, farben=Farben):
+        self.zimmer = zimmer
+        self.layout = layout
+        self.roboter = roboter
+        self.konfiguration = konfiguration
+        self.farben = farben
+
+        self.widget = tk.Canvas(
+            parent,
+            width=zimmer.breite * konfiguration.TILE_SIZE,
+            height=zimmer.hoehe * konfiguration.TILE_SIZE,
+            bg=farben.BODEN,
+            highlightthickness=0,
+        )
+        self.widget.pack(side="top")
+
+    def neu_zeichnen(self):
+        """Löscht die Zeichenfläche und zeichnet Küche + Raster + Roboter neu."""
+        self.widget.delete("all")  # alles Vorherige wird entfernt, sonst stapeln sich die Zeichnungen
+        self._zeichne_kacheln()
+        self._zeichne_roboter()
+
+    def _zeichne_kacheln(self):
+        tile = self.konfiguration.TILE_SIZE
+        for gx in range(self.zimmer.breite):
+            for gy in range(self.zimmer.hoehe):
+                x0, y0 = gx * tile, gy * tile
+                x1, y1 = x0 + tile, y0 + tile
+
+                fill, label = self.layout.kachel_bei(gx, gy)
+                self.widget.create_rectangle(x0, y0, x1, y1, fill=fill, outline=self.farben.RASTER)
+
+                if label is not None:
+                    textfarbe = self.farben.TEXT_HELL if fill != self.farben.STUHL else "black"
+                    self.widget.create_text(x0 + tile / 2, y0 + tile / 2,
+                                             text=label, fill=textfarbe,
+                                             font=("Segoe UI", 11, "bold"))
+
+    def _zeichne_roboter(self):
+        """Platzhalter: grüner Kreis an der Roboter-Position."""
+        tile = self.konfiguration.TILE_SIZE
+        rx0 = self.roboter.x * tile + 6
+        ry0 = self.roboter.y * tile + 6
+        rx1 = rx0 + tile - 12
+        ry1 = ry0 + tile - 12
+        self.widget.create_oval(rx0, ry0, rx1, ry1, fill=self.farben.ROBOTER, outline="black", width=2)
+
+
+# ============================================================================
+# "Chef"-Klasse: steckt alle Bausteine zusammen
+# ============================================================================
+class KuecheGUI:
+    """Hält Fenster, Raum und Roboter und verbindet die kleinen Bausteine
+    (LegendenPanel, Terminal, RaumCanvas, KuechenLayout) zu einer Anwendung.
+
+    Diese Klasse baut selbst möglichst wenig - sie delegiert an die
+    spezialisierten Klassen und ruft am Ende nur noch neu_zeichnen()
+    und mainloop() auf.
+    """
+
+    def __init__(self, konfiguration=Konfiguration, farben=Farben):
+        self.konfiguration = konfiguration
+        self.farben = farben
+
+        # ---- Raum, Roboter, Layout (reine Daten/Logik) ----
+        self.zimmer = Raum(name="Küche", hindernisse=[(5, 5), (6, 5), (7, 5)])
+        self.roboter = Roboter()
+        self.layout = KuechenLayout(self.zimmer.breite, self.zimmer.hoehe, farben)
+
+        # ---- Fenster-Grundgerüst ----
+        self.fenster = tk.Tk()
+        self.fenster.title("iSlave - Steuerung")
+        self.fenster.configure(bg=farben.HINTERGRUND_DUNKEL)
+
+        haupt_rahmen = tk.Frame(self.fenster, bg=farben.HINTERGRUND_DUNKEL)
+        haupt_rahmen.pack(fill="both", expand=True)
+
+        rechts_rahmen = tk.Frame(haupt_rahmen, bg=farben.HINTERGRUND_DUNKEL)
+
+        # ---- Bausteine erzeugen ----
+        self.legende = LegendenPanel(haupt_rahmen, konfiguration, farben)
+        rechts_rahmen.pack(side="left", fill="both", expand=True)
+        self.canvas = RaumCanvas(rechts_rahmen, self.zimmer, self.layout,
+                                  self.roboter, konfiguration, farben)
+        self.terminal = Terminal(rechts_rahmen, self.zimmer, konfiguration, farben)
+
+    def starten(self):
+        """Zeichnet die Karte einmal initial und startet die tkinter-Mainloop."""
+        self.canvas.neu_zeichnen()
+        self.fenster.mainloop()
+
+
+if __name__ == "__main__":
+    app = KuecheGUI()
+    app.starten()
