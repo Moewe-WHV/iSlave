@@ -67,5 +67,5 @@
 
 **Wann:** 04.09.2026 – 08:00 Uhr  
 **Ort / Link:** Teams  
-**Schriftführer:** Beisner  
+**Schriftführer:** Benjamin  
 **Vorzubereiten:** Jede Gruppe bringt ihre Fortschritte vom Vortag mit
