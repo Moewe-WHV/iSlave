@@ -19,4 +19,3 @@ class RoboterAktionen:
         if "Saugen" in ausgewaehlte_aktionen and "Wischen" in ausgewaehlte_aktionen:
             return ["Saugen", "Wischen"]
         return ausgewaehlte_aktionen
-        

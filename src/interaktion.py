@@ -1,14 +1,18 @@
 def verfuegbare_raeume_anzeigen(raumsteuerung):
     return raumsteuerung.gueltige_raeume
 
+
 def raum_auswaehlen(raumsteuerung, auswahl):
     return raumsteuerung.raum_wechseln(auswahl)
+
 
 def terminal_raeume_anzeigen(raumsteuerung):
     return "\n".join(raumsteuerung.gueltige_raeume)
 
+
 def raum_dialog(raumsteuerung, auswahl):
     return raum_auswaehlen(raumsteuerung, auswahl)
+
 
 def terminal_raum_dialog(raumsteuerung):
     while True:
@@ -30,6 +34,7 @@ def aktion_auswaehlen(aktionen, auswahl):
     if auswahl in aktionen.gueltige_aktionen:
         return auswahl
     return "Aktion nicht möglich!"
+
 
 def terminal_interaktion(raumsteuerung, aktionen):
     zielraum = terminal_raum_dialog(raumsteuerung)
@@ -85,7 +90,7 @@ def terminal_menu(raumsteuerung, aktionen, akku):
 
         if ergebnis == "auftrag":
             ausgewaehlte_aktionen = []
-            
+
             terminal_raum_dialog(raumsteuerung)
 
             erste_aktion = terminal_aktion_dialog(aktionen)
@@ -98,26 +103,26 @@ def terminal_menu(raumsteuerung, aktionen, akku):
             if weitere_aktion is True:
                 zweite_aktion = terminal_aktion_dialog(aktionen)
 
-                if aktionen.aktionen_bereits_gewaehlt(ausgewaehlte_aktionen, zweite_aktion):
+                if aktionen.aktionen_bereits_gewaehlt(
+                    ausgewaehlte_aktionen, zweite_aktion
+                ):
                     print("Aktion bereits gewählt.")
-                else: 
+                else:
                     ausgewaehlte_aktionen.append(zweite_aktion)
-                    
+
             sortierte_aktionen = aktionen.reihenfolge_festlegen(ausgewaehlte_aktionen)
 
             for aktion in sortierte_aktionen:
                 ergebnis = aktionen.aktion_ausfuehren(aktion)
                 print(f"\nAktion ausgeführt: {ergebnis}")
 
-                akku.verbrauchen(10) 
+                akku.verbrauchen(10)
 
-           
         elif ergebnis == "aktion":
             if raumsteuerung.aktueller_raum is None:
                 print("Bitte zuerst eine Raum auwählen.")
             else:
                 terminal_aktion_dialog(aktionen)
-   
+
         elif ergebnis == "beenden":
             return
-
