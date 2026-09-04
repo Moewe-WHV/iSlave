@@ -47,18 +47,18 @@ def test_raum_dialog_gibt_gewaehlten_raum_zurueck():
 
 def test_aktion_wird_an_aktionen_uebergeben():
     aktionen = RoboterAktionen()
-    ergebnis = aktion_auswaehlen(aktionen, "Spülmittel")
-    assert ergebnis == "Spülmittel"
+    ergebnis = aktion_auswaehlen(aktionen, "Spülen")
+    assert ergebnis == "Spülen"
 
 
 def test_aktion_auswaehlen_mit_roboter_aktionen_klasse():
     aktionen = RoboterAktionen()
-    ergebnis = aktion_auswaehlen(aktionen, "Spülmittel")
-    assert ergebnis == "Spülmittel"
+    ergebnis = aktion_auswaehlen(aktionen, "Spülen")
+    assert ergebnis == "Spülen"
 
 
 def test_aktuelle_aktion_wird_gespeichert():
 
     aktionen = RoboterAktionen()
-    aktionen.aktion_ausfuehren("Spülmittel")
-    assert aktionen.aktuelle_aktion == "Spülmittel"
+    aktionen.aktion_ausfuehren("Spülen")
+    assert aktionen.aktuelle_aktion == "Spülen"
