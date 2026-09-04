@@ -2,7 +2,7 @@ import io
 import unittest
 from contextlib import redirect_stdout
 
-from src.akku1 import Akku
+from akku import Akku
 
 
 class TestAkku(unittest.TestCase):

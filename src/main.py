@@ -1,5 +1,5 @@
 # Haupteinstiegspunkt der Terminalanwendung
-from akku1 import Akku
+from akku import Akku
 
 if __name__ == "__main__":
 
