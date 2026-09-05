@@ -28,7 +28,7 @@ Repo klonen, dann virtuelle Umgebung anlegen und Dependencies installieren.
 ```bash
 git clone https://github.com/Moewe-WHV/iSlave.git
 cd iSlave
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements-dev.txt
 ```
