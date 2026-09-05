@@ -9,8 +9,9 @@ def ist_wartung_faellig(wartungstermin: date, aktuelles_datum: date) -> bool:
     return aktuelles_datum >= wartungstermin
 
 
-# def berechne_verbleibende_tage(wartungstermin: date, aktuelles_datum: date) -> int:
-#     return (wartungstermin - aktuelles_datum).days                                                !!!!!! Soll das Kommentiert bleiben
+# TODO: klären, ob diese Variante (ohne max(..., 0)) noch gebraucht wird
+# def berechne_verbleibende_tage(wartungstermin, aktuelles_datum) -> int:
+#     return (wartungstermin - aktuelles_datum).days
 
 
 def berechne_verbleibende_tage(wartungstermin: date, aktuelles_datum: date) -> int:
