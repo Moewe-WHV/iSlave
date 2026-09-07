@@ -1,6 +1,6 @@
 import tkinter as tk
-from template_raum import Raum              # Alles mit template davor kann geändert werden
-from template_roboter import Roboter
+from test_raum import Raum              # Alles mit template davor kann geändert werden
+from test_roboter import Roboter
 
 
 # ============================================================================
