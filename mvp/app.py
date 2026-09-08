@@ -8,7 +8,8 @@ import threading
 import tkinter as tk
 from tkinter import messagebox, ttk
 
-from .core import ACTIONS, HEIGHT, ROOMS, WIDTH, Simulation, Store, next_service
+from .core import ACTIONS, ROOMS, Simulation, Store, next_service
+from .pixel_view import PixelView
 
 BG = "#eef2f5"
 INK = "#172b3a"
@@ -87,13 +88,14 @@ class App:
             style="Sub.TLabel",
         ).pack(anchor="w", pady=(3, 10))
         self.canvas = tk.Canvas(
-            center, bg="#e3e9ec", highlightthickness=0, width=600, height=420
+            center, bg="#354954", highlightthickness=0, width=600, height=420
         )
         self.canvas.pack(fill="both", expand=True)
+        self.pixel_view = PixelView(self.canvas)
         self.canvas.bind("<Configure>", lambda event: self.draw())
         ttk.Label(
             center,
-            text="● Roboter     ▧ Möbel     ▪ Mint: bearbeitete Fläche",
+            text="Top-View · Roboter-Sprite · Lichtpunkte: bearbeitete Fläche",
             style="Sub.TLabel",
         ).pack(anchor="w", pady=8)
         self.progress = ttk.Progressbar(center, maximum=100)
@@ -196,93 +198,9 @@ class App:
         self.draw()
 
     def draw(self):
-        if not hasattr(self, "canvas"):
+        if not hasattr(self, "pixel_view"):
             return
-        c = self.canvas
-        c.delete("all")
-        gap, label = 22, 28
-        size = min(
-            (max(c.winfo_width(), 100) - gap * 3) / (WIDTH * 2),
-            (max(c.winfo_height(), 100) - gap * 3 - label * 2) / (HEIGHT * 2),
-        )
-        size = max(2, size)
-        full_w = WIDTH * size * 2 + gap
-        full_h = (HEIGHT * size + label) * 2 + gap
-        left = (c.winfo_width() - full_w) / 2
-        top = (c.winfo_height() - full_h) / 2
-        for index, room in enumerate(ROOMS.values()):
-            ox = left + (index % 2) * (WIDTH * size + gap)
-            oy = top + (index // 2) * (HEIGHT * size + label + gap) + label
-            active = room.name == self.sim.state.room
-            tag = "room:" + room.name
-            c.create_text(
-                ox,
-                oy - 15,
-                anchor="w",
-                text=room.name,
-                font=("Segoe UI", 11, "bold"),
-                fill=TEAL if active else INK,
-                tags=("room-label", tag),
-            )
-            cleaned = any(
-                a in self.sim.state.completed[room.name] for a in ("Saugen", "Wischen")
-            )
-            for x in range(WIDTH):
-                for y in range(HEIGHT):
-                    visited = active and (x, y) in self.sim.visited
-                    color = "#bbdfd2" if visited or cleaned else "#fbfaf6"
-                    c.create_rectangle(
-                        ox + x * size,
-                        oy + y * size,
-                        ox + (x + 1) * size,
-                        oy + (y + 1) * size,
-                        fill=color,
-                        outline="#e1e5e3",
-                        tags=(tag,),
-                    )
-            for name, x, y, w, h in room.furniture:
-                c.create_rectangle(
-                    ox + x * size + 1,
-                    oy + y * size + 1,
-                    ox + (x + w) * size - 1,
-                    oy + (y + h) * size - 1,
-                    fill=room.accent,
-                    outline="",
-                    tags=(tag,),
-                )
-                if w >= 2 and size >= 16:
-                    c.create_text(
-                        ox + (x + w / 2) * size,
-                        oy + (y + h / 2) * size,
-                        text=name,
-                        width=w * size - 2,
-                        font=("Segoe UI", 7),
-                        fill=INK,
-                        tags=(tag,),
-                    )
-            c.create_rectangle(
-                ox,
-                oy,
-                ox + WIDTH * size,
-                oy + HEIGHT * size,
-                outline=TEAL if active else "#a1afb7",
-                width=3 if active else 1,
-                tags=(tag,),
-            )
-            if active:
-                x, y = self.sim.position
-                cx, cy = ox + (x + 0.5) * size, oy + (y + 0.5) * size
-                radius = max(5, size * 0.4)
-                c.create_oval(
-                    cx - radius,
-                    cy - radius,
-                    cx + radius,
-                    cy + radius,
-                    fill=TEAL,
-                    outline="white",
-                    width=2,
-                    tags=("robot", tag),
-                )
+        self.pixel_view.draw(self.sim)
 
     def perform(self, function):
         try:

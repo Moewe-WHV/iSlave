@@ -2,6 +2,12 @@
 
 Eigenständige Haushaltsroboter-Simulation. Alle ursprünglichen Projektdateien bleiben unverändert. Die Raumpläne orientieren sich an den vorhandenen Mockups; die isolierte Anwendung übernimmt keine importseitig startenden Fenster aus den Prototypen.
 
+## Pixelgrafik
+
+Die gemeinsame Karte verwendet eigene Pixelgrafiken im Stil klassischer Top-View-Rollenspiele: Holzböden, Fliesen, Wände, Fenster, Türen, Möbel und ein Roboter-Sprite. Es werden keine Pokémon-Assets verwendet. Die Darstellung liegt in `pixel_view.py`, benötigt keine zusätzlichen Pakete und übernimmt Raumgeometrie und Roboterzustand aus der bestehenden Simulation. Flure und Türen stellen die Verbindung grafisch dar; Raumwechsel werden weiterhin sofort simuliert.
+
+Diese Überarbeitung betrifft ausschließlich die Grafik. Die zuvor festgestellten Abweichungen von den GitHub-User-Stories (unter anderem Nutzerpflicht, geführter Dialog, Aktionsverbrauch, Equipment, Highscore und ausschließlich externe Terminaleingabe) werden dadurch noch nicht behoben.
+
 ## Start
 
 Windows: `mvp/start.bat` doppelklicken. Alternativ im Repository-Ordner:
