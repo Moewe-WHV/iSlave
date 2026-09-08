@@ -1,0 +1,10 @@
+[flake8]
+# an black angleichen (black formatiert auf 88 Zeichen)
+max-line-length = 88
+extend-ignore = E203, W503
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    src/frontend

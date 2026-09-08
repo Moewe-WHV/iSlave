@@ -5,7 +5,7 @@ Klassenprojekt - IBB FIAE Winter A1 – 8 Wochen, 6 Sprints.
 
 ## Setup Windows
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements-dev.txt
 ```
@@ -26,9 +26,12 @@ pytest
 iSlave/
 ├── docs/
 │   ├── burndown_charts/            # Sprint Burndown Charts
+|   ├── mockups/                    # Desgignvorlagen
 │   ├── diagrams/                   # Alle Arten von Diagrammen 
-│   └── protocols/                  # Sitzungsprotokolle (.md)
+│   ├── protocols/                  # Sitzungsprotokolle & Daylies
+│   └── iSlave_Onboarding.md        # Onboarding-File          
 ├── src/                            # Hier liegt der Code  
+|   ├── frontend/                   # GUI & Assets                        
 │   └── main.py
 ├── tests/                          # Test-Skripte
 │   └── test_placeholder.py
@@ -41,7 +44,7 @@ iSlave/
 Branching-Strategie und Contribution-Regeln: siehe [CONTRIBUTING.md](CONTRIBUTING.md).  
 Bei Fragen: Tim
 
-## Team (Sprint 1)
+## Team (Sprint 1 - 3)
 
 | Rolle           | Person    |
 |---              |---        |

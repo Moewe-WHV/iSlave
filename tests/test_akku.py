@@ -2,7 +2,7 @@ import io
 import unittest
 from contextlib import redirect_stdout
 
-from src.akku1 import Akku
+from akku import Akku
 
 
 class TestAkku(unittest.TestCase):
@@ -100,9 +100,7 @@ class TestAkku(unittest.TestCase):
 
         # Laden von 95 % auf 100 % -> zyklen_zaehler = 500 - (100 - 95) = 495
         with redirect_stdout(output):
-            geladen, zyklen_zaehler, _ = akku.laden(
-                akku.akkustand, batterie_laden=True
-            )
+            geladen, zyklen_zaehler, _ = akku.laden(akku.akkustand, batterie_laden=True)
 
         self.assertEqual(zyklen_zaehler, 495)
         self.assertIn(

@@ -1,7 +1,10 @@
 ```mermaid
-%%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#1500ff, #c21307"}}}}%%
-
-
+---
+config:
+  themeVariables:
+    xyChart:
+      plotColorPalette: "#1500ff, #c21307"
+---
 xychart-beta
     title "Sprint 2 Burndown"
     x-axis ["Start", "MO", "DI", "MI", "DO", "FR"]
