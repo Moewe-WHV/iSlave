@@ -1,6 +1,6 @@
 import tkinter as tk
-from template_raum import Raum             #Alles mit template davor kann geändert werden
-from template_roboter import Roboter
+from kueche_raum import Raum             #Alles mit template davor kann geändert werden
+from kueche_roboter import Roboter
 
 # Konfiguration des Rasters 
 TILE_SIZE = 64      # Größe der Kacheln in Pixel (zb 64x64 px)

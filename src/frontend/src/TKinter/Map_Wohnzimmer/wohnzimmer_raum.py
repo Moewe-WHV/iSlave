@@ -2,7 +2,7 @@
 
 
 class Raum:
-    def __init__(self, name, breite=10, hoehe=12, hindernisse=None, kachel_farben=None):
+    def __init__(self, name, breite=11, hoehe=7, hindernisse=None, kachel_farben=None):
         self.name = name
         self.breite = breite
         self.hoehe = hoehe

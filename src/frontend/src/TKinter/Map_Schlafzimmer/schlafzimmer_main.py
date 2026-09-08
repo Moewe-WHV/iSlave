@@ -1,6 +1,6 @@
 import tkinter as tk
-from template_raum import Raum             #Alles mit template davor kann geändert werden
-from template_roboter import Roboter
+from schlafzimmer_raum import Raum             #Alles mit template davor kann geändert werden
+from schlafzimmer_roboter import Roboter
 
 # Konfiguration des Rasters 
 TILE_SIZE = 64      # Größe der Kacheln in Pixel (zb 64x64 px)
@@ -9,25 +9,22 @@ TILE_SIZE = 64      # Größe der Kacheln in Pixel (zb 64x64 px)
 
 kachel_farben = {}
 
-holz_kacheln = [(0,0), (0,1), (0,2), (0,3), (0,4), (0,5), (0,6), (0,7), (0,8), (1,0), (1,3), (1,4), (1,5), (1,6), (1,7), (1,8), (5,2), (5,3), (6,2), (6,3), (7,2), (7,3)]
-for koordinate in holz_kacheln:
-    kachel_farben[koordinate] = "#b5651d"
+nachtschrank_kacheln = [(1,0), (1,1), (2,0), (2,1), (8,0), (9,0), (8,1), (9,1)]
+for koordinate in nachtschrank_kacheln:
+    kachel_farben[koordinate] = "#f8f4f1"
 
-herd_kacheln = [(1,1), (1,2)]
-for koordinate in herd_kacheln:
-    kachel_farben[koordinate] = "#080808"
+bett_kacheln = [(3,5), (4,5), (5,5), (6,5), (7,5), (3,4), (4,4), (5,4), (6,4), (7,4), (3,3), (4,3), (5,3), (6,3), (7,3), (3,2), (4,2), (5,2), (6,2), (7,2), (3,1), (4,1), (5,1), (6,1), (7,1), (3,0), (4,0), (5,0), (6,0), (7,0)]
+for koordinate in bett_kacheln:
+    kachel_farben[koordinate] = "#1F2CE4"
 
-stuehle_kacheln = [(5,1), (7,1), (5,4), (7,4)]
-for koordinate in stuehle_kacheln:
-    kachel_farben[koordinate] = "#EE8F22"
+kleiderschrank_kacheln = [(0,7), (0,8), (1,7), (1,8), (2,7), (2,8), (3,7), (3,8), (4,7), (4,8), (5,7), (5,8), (6,7), (6,8), (7,7), (7,8), (8,7), (8,8), (9,7), (9,8), (10,7), (10,8)]
+for koordinate in kleiderschrank_kacheln:
+    kachel_farben[koordinate] = "#B46B3B"
 
-fridge_kacheln = [(0,11), (0,10), (0,9), (1,11), (1,10), (1,9)]
-for koordinate in fridge_kacheln:
-    kachel_farben[koordinate] = "#A5A19D"
 
 zimmer = Raum(
     name="Zimmer", 
-    hindernisse=[(1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (1, 10), (1, 11), (1, 12), (5, 2), (5, 3), (6, 2), (6, 3), (7, 2), (7, 3)], #wenn kein Hindernis, dann None
+    hindernisse=[(1,0), (2,0), (3,0), (4,0), (5,0), (6,0), (7,0), (8,0), (9,0), (1,1), (2,1), (8,1), (9,1), (0,7), (0,8), (1,7), (1,8), (2,7), (2,8), (3,7), (3,8), (4,7), (4,8), (5,7), (5,8), (6,7), (6,8), (7,7), (7,8), (8,7), (8,8), (9,7), (9,8), (10,7), (10,8)], #wenn kein Hindernis, dann None
     kachel_farben=kachel_farben,
 ) 
 
@@ -63,7 +60,7 @@ def zeichne_karte():
             elif ist_hinderniss:
                 fill = "#555555"                                 # Fallback: Hindernis ohne eigene Farbe -> Standardgrau
             else:
-                fill = "#cab920"                                     # sonst: Standardboden
+                fill = "#7c430d"                                     # sonst: Standardboden
             
             canvas.create_rectangle(x0, y0, x1, y1, fill=fill, outline="#999999")
 
