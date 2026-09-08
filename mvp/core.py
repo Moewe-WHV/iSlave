@@ -15,7 +15,7 @@ class Room:
     name: str
     accent: str
     furniture: tuple
-    entry: tuple = (5, 7)
+    entry: tuple = (5, 6)
 
     @property
     def floor(self):
@@ -30,41 +30,47 @@ class Room:
 ROOMS = {
     "Wohnzimmer": Room(
         "Wohnzimmer",
-        "#d9c4a2",
+        "#b98159",
         (
-            ("TV", 4, 0, 4, 1),
-            ("Sofa", 8, 4, 3, 3),
-            ("Tisch", 5, 4, 2, 2),
-            ("Regal", 0, 2, 1, 4),
+            ("Ladestation", 0, 0, 3, 2),
+            ("TV", 3, 0, 7, 1),
+            ("Sofa", 9, 4, 3, 3),
+            ("Sofa", 3, 7, 9, 2),
         ),
     ),
     "Küche": Room(
         "Küche",
-        "#dec9a8",
+        "#efe2ae",
         (
-            ("Arbeitsfläche", 0, 0, 5, 2),
-            ("Kühlschrank", 0, 3, 2, 2),
-            ("Esstisch", 7, 3, 3, 3),
+            ("Arbeitsfläche", 0, 0, 3, 7),
+            ("Kühlschrank", 0, 7, 3, 2),
+            ("Esstisch", 7, 2, 4, 3),
+            ("Stuhl", 8, 1, 1, 1),
+            ("Stuhl", 10, 1, 1, 1),
+            ("Stuhl", 8, 5, 1, 1),
+            ("Stuhl", 10, 5, 1, 1),
         ),
     ),
     "Bad": Room(
         "Bad",
-        "#b7d9de",
+        "#91d2e1",
         (
-            ("Dusche", 0, 0, 3, 3),
-            ("Wanne", 0, 5, 3, 3),
-            ("Waschbecken", 5, 0, 2, 1),
-            ("Waschmaschine", 9, 0, 3, 2),
+            ("Dusche", 0, 0, 2, 3),
+            ("Wanne", 0, 6, 2, 3),
+            ("Waschbecken", 2, 0, 2, 1),
+            ("Toilette", 6, 0, 2, 1),
+            ("Waschmaschine", 8, 0, 2, 2),
+            ("Trockner", 10, 0, 2, 2),
         ),
     ),
     "Schlafzimmer": Room(
         "Schlafzimmer",
-        "#cdc4df",
+        "#b98159",
         (
-            ("Bett", 4, 1, 4, 4),
-            ("Nachttisch", 2, 1, 1, 2),
-            ("Nachttisch", 9, 1, 1, 2),
-            ("Schrank", 0, 0, 1, 6),
+            ("Bett", 3, 0, 6, 5),
+            ("Nachttisch", 1, 0, 2, 2),
+            ("Nachttisch", 9, 0, 2, 2),
+            ("Schrank", 0, 7, 12, 2),
         ),
     ),
 }

@@ -4,6 +4,8 @@ Eigenständige Haushaltsroboter-Simulation. Alle ursprünglichen Projektdateien 
 
 ## Pixelgrafik
 
+Die Möbelanordnung ist aus `docs/mockups/Wohnzimmer.pdf`, `Küche.pdf`, `Schlafzimmer.pdf` und der neueren `BadezimmerV2.pdf` auf das 12×9-Raster übertragen. Wohnzimmer: Ladestation oben links, Fernsehtisch oben und blaues L-Sofa rechts/unten. Küche: Arbeitsfläche mit Kochfeld links, Kühlschrank darunter, Tisch mit vier Stühlen rechts. Schlafzimmer: Bett oben mittig, zwei Nachttische, Kleiderschrank unten. Bad: Dusche und Wanne links; Waschbecken, Toilette, Waschmaschine und Trockner oben. Möbel und Kollisionsflächen verwenden dieselben Koordinaten. Die Mockups definieren keine gemeinsame Wohnungsanordnung; die bestehende Vier-Raum-Übersicht bleibt erhalten.
+
 Die gemeinsame Karte verwendet eigene Pixelgrafiken im Stil klassischer Top-View-Rollenspiele: Holzböden, Fliesen, Wände, Fenster, Türen, Möbel und ein Roboter-Sprite. Es werden keine Pokémon-Assets verwendet. Die Darstellung liegt in `pixel_view.py`, benötigt keine zusätzlichen Pakete und übernimmt Raumgeometrie und Roboterzustand aus der bestehenden Simulation. Flure und Türen stellen die Verbindung grafisch dar; Raumwechsel werden weiterhin sofort simuliert.
 
 Diese Überarbeitung betrifft ausschließlich die Grafik. Die zuvor festgestellten Abweichungen von den GitHub-User-Stories (unter anderem Nutzerpflicht, geführter Dialog, Aktionsverbrauch, Equipment, Highscore und ausschließlich externe Terminaleingabe) werden dadurch noch nicht behoben.

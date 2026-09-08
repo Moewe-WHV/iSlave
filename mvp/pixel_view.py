@@ -43,29 +43,49 @@ def furniture(p, name, x, y, w, h):
     p.rect(x + 2, y + 3, w - 2, h - 3, "756c64")
     p.rect(x, y, w - 2, h - 3, "454453")
     p.rect(x + 2, y + 2, w - 6, h - 7, "aa7351")
-    if name in ("Tisch", "Esstisch", "Nachttisch"):
+    if name == "Ladestation":
+        p.rect(x + 2, y + 2, w - 6, h - 7, "bc4d52")
+        p.rect(x + 6, y + 5, w - 14, h - 13, "d86b64")
+        p.rect(x + w // 2 - 6, y + 7, 12, 9, "434d63")
+        p.rect(x + w // 2 - 4, y + 9, 8, 3, "b9d8b4")
+    elif name == "Stuhl":
+        p.rect(x + 2, y + 2, w - 6, h - 6, "c39769")
+        p.rect(x + 2, y + 2, w - 6, 3, "e4bb86")
+    elif name == "Toilette":
+        p.rect(x + 3, y + 2, w - 8, h - 6, "eef0df")
+        p.rect(x + 7, y + 5, w - 16, h - 11, "a0c7cc")
+    elif name in ("Tisch", "Esstisch", "Nachttisch"):
         p.rect(x + 3, y + 3, w - 8, h - 9, "daa366")
         p.rect(x + 4, y + 5, w - 10, 2, "ecc887")
         if w >= 30:
             p.rect(x + w // 2 - 4, y + h // 2 - 4, 8, 8, "f7e8c9")
             p.rect(x + w // 2 - 2, y + h // 2 - 2, 4, 4, "77a47c")
     elif name == "Sofa":
-        p.rect(x + 2, y + 2, w - 6, h - 7, "69669a")
-        p.rect(x + 5, y + 4, w - 12, 8, "aaa1ca")
-        for yy in range(y + 15, y + h - 8, 12):
-            p.rect(x + 7, yy, w - 15, 10, "8985b6")
-            p.rect(x + 8, yy, w - 17, 2, "b8afd4")
-        p.rect(x + 2, y + 7, 4, h - 15, "bab0d4")
-        p.rect(x + w - 9, y + 7, 4, h - 15, "55577f")
+        p.rect(x, y, w, h, "474db2")
+        if w > h:
+            for xx in range(x + 3, x + w - 8, 16):
+                p.rect(xx, y + 3, 13, h - 9, "636bc8")
+                p.rect(xx, y + 3, 13, 2, "8894df")
+            p.rect(x, y + h - 4, w, 4, "363e93")
+        else:
+            for yy in range(y + 3, y + h - 8, 16):
+                p.rect(x + 3, yy, w - 9, 13, "636bc8")
+                p.rect(x + 3, yy, 2, 13, "8894df")
+            p.rect(x + w - 4, y, 4, h, "363e93")
     elif name == "Bett":
         p.rect(x + 3, y + 4, w - 8, h - 10, "f3e8cf")
         p.rect(x + 5, y + 5, w - 12, 13, "ffffee")
         p.rect(x + w // 2 - 1, y + 5, 2, 13, "c8cbbb")
-        p.rect(x + 4, y + 21, w - 10, h - 28, "7694b5")
+        p.rect(x + 4, y + 21, w - 10, h - 28, "474db2")
         p.rect(x + 4, y + 21, w - 10, 5, "b9d5d6")
         for xx in range(x + 9, x + w - 10, 12):
             p.rect(xx, y + 30, 2, h - 39, "8fb0c7")
-    elif name in ("Regal", "Schrank"):
+    elif name == "Schrank":
+        p.rect(x + 2, y + 2, w - 6, h - 7, "e2e0d2")
+        for xx in range(x + 4, x + w - 16, 24):
+            p.rect(xx, y + 4, 21, h - 11, "f2eedf")
+            p.rect(xx + 17, y + h // 2, 2, 5, "7e858c")
+    elif name == "Regal":
         for yy in range(y + 5, y + h - 8, 16):
             p.rect(x + 3, yy, w - 8, 9, "6f534d")
             for i, color in enumerate(("72998a", "d19c73", "aaa2ba")):
@@ -84,10 +104,16 @@ def furniture(p, name, x, y, w, h):
         p.rect(x + 4, y + 4, 20, 12, "808e99")
         p.rect(x + 6, y + 6, 16, 8, "b4d5d5")
         p.rect(x + w - 27, y + 4, 20, 12, "4d5363")
+        if h > w:
+            # Mockup: a vertical counter along the left wall, hob at its top.
+            p.rect(x + 2, y + 2, w - 6, h - 7, "b78159")
+            p.rect(x + 4, y + 4, w - 10, 23, "353b46")
+            for yy in range(y + 32, y + h - 10, 16):
+                p.rect(x + 4, yy, w - 10, 1, "c99d73")
         for dx in (0, 9):
             for dy in (0, 6):
                 p.rect(x + w - 25 + dx, y + 5 + dy, 5, 4, "a0a7ad")
-    elif name in ("Kühlschrank", "Waschmaschine"):
+    elif name in ("Kühlschrank", "Waschmaschine", "Trockner"):
         p.rect(x + 2, y + 2, w - 6, h - 7, "d7e3dd")
         p.rect(x + 3, y + 3, w - 8, 3, "f7f4dc")
         if name == "Kühlschrank":
@@ -96,7 +122,7 @@ def furniture(p, name, x, y, w, h):
         else:
             p.rect(x + w // 2 - 8, y + 10, 16, 15, "738f9c")
             p.rect(x + w // 2 - 5, y + 12, 10, 11, "accdd1")
-            p.rect(x + 5, y + 6, 2, 2, "749c89")
+            p.rect(x + 5, y + 6, 2, 2, "cfaa78" if name == "Trockner" else "749c89")
     elif name in ("Wanne", "Dusche", "Waschbecken"):
         p.rect(x + 2, y + 2, w - 6, h - 7, "f1f0db")
         p.rect(x + 5, y + 5, w - 12, h - 13, "83b6c0")
@@ -113,17 +139,17 @@ def room_art(p, room, ox, oy):
             xx, yy = ox + x * TILE, oy + y * TILE
             if tiled:
                 a, b = (
-                    ("b3d1c9", "c6dfd0") if room.name == "Bad" else ("e2d5ac", "eee2bc")
+                    ("91cedd", "9bd5e2") if room.name == "Bad" else ("eee0aa", "f2e6b9")
                 )
                 p.rect(xx, yy, 16, 16, a if (x + y) % 2 else b)
                 p.rect(xx, yy, 16, 1, "f5efcf")
                 p.rect(xx, yy, 1, 16, "91a9a0")
                 p.rect(xx + 12, yy + 12, 2, 2, "c5c2a6")
             else:
-                p.rect(xx, yy, 16, 16, "cfaa78" if y % 2 else "d8b785")
+                p.rect(xx, yy, 16, 16, "b78059" if y % 2 else "bf8962")
                 p.rect(xx, yy + 15, 16, 1, "b28a68")
                 p.rect(xx + (7 if y % 2 else 0), yy, 1, 15, "be986e")
-                p.rect(xx + 3, yy + 5, 7, 1, "e4c695")
+                p.rect(xx + 3, yy + 5, 7, 1, "cc9b72")
     # Cutaway walls are outside the original walkable raster.
     w, h = WIDTH * TILE, HEIGHT * TILE
     for x, y, ww, hh in (
@@ -157,10 +183,14 @@ def apartment():
     for room, (ox, oy) in zip(ROOMS.values(), ORIGINS):
         room_art(p, room, ox, oy)
         # Open door at the free side of each room, facing the central hallway.
-        door_x = ox + WIDTH * TILE if ox == 16 else ox - 8
-        door_y = oy + 7 * TILE
-        p.rect(door_x, door_y, 8, 16, "dac396")
-        p.rect(door_x, door_y, 8, 2, "eee0b9")
+        if room.name == "Küche":
+            door_x, door_y = ox + 5 * TILE, oy + HEIGHT * TILE
+            p.rect(door_x, door_y, 16, 8, "dac396")
+        else:
+            door_x = ox + WIDTH * TILE if ox == 16 else ox - 8
+            door_y = oy + (3 if room.name == "Wohnzimmer" else 5) * TILE
+            p.rect(door_x, door_y, 8, 16, "dac396")
+            p.rect(door_x, door_y, 8, 2, "eee0b9")
     return p
 
 
