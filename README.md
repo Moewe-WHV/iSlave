@@ -44,7 +44,7 @@ iSlave/
 Branching-Strategie und Contribution-Regeln: siehe [CONTRIBUTING.md](CONTRIBUTING.md).  
 Bei Fragen: Tim
 
-## Team (Sprint 1)
+## Team (Sprint 1 - 3)
 
 | Rolle           | Person    |
 |---              |---        |
