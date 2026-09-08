@@ -2,6 +2,9 @@
 
 from datetime import date
 from pathlib import Path
+import queue
+import sys
+import threading
 import tkinter as tk
 from tkinter import messagebox, ttk
 
@@ -14,12 +17,14 @@ TEAL = "#087f78"
 
 
 class App:
-    def __init__(self, root, store=None, auto_tick=True):
+    def __init__(self, root, store=None, auto_tick=True, terminal=False):
         self.root = root
         self.store = store or Store(Path(__file__).parent / "data" / "profiles.json")
         self.sim = Simulation()
         self.timer = None
         self.auto_tick = auto_tick
+        self.terminal = terminal
+        self.inbox = queue.Queue()
         root.title("iSlave · Haushaltsroboter")
         root.geometry("1220x840")
         root.minsize(980, 760)
@@ -30,11 +35,11 @@ class App:
         self.log("Willkommen. Profil laden oder direkt mit Demo starten.")
         self.log("Raum wählen und Auftrag starten. 'hilfe' zeigt alle Befehle.")
         try:
-            self.profile["values"] = sorted(self.store.read())
             self.sim = Simulation(self.store.load("Demo"))
         except (ValueError, OSError) as exc:
             self.log(str(exc))
         self.refresh()
+        self.command.focus_set()
         if auto_tick:
             self.schedule()
 
@@ -70,50 +75,15 @@ class App:
         )
         body = ttk.Frame(shell)
         body.grid(row=1, column=0, sticky="nsew")
-        body.columnconfigure(1, weight=1)
+        body.columnconfigure(0, weight=1)
         body.rowconfigure(0, weight=1)
-        left = ttk.Frame(body, width=172)
-        left.grid(row=0, column=0, sticky="ns", padx=(0, 18))
-        ttk.Label(left, text="DEINE RÄUME", style="Heading.TLabel").pack(
-            anchor="w", pady=(0, 12)
-        )
-        self.room_buttons = {}
-        for name in ROOMS:
-            button = ttk.Button(left, text=name, command=lambda n=name: self.room(n))
-            button.pack(fill="x", pady=4)
-            self.room_buttons[name] = button
-        ttk.Separator(left).pack(fill="x", pady=20)
-        ttk.Label(left, text="NUTZERPROFIL", style="Heading.TLabel").pack(
-            anchor="w", pady=(0, 10)
-        )
-        self.profile = ttk.Combobox(left, width=16)
-        self.profile.set("Demo")
-        self.profile.pack(fill="x")
-        self.load_button = ttk.Button(
-            left, text="Anlegen / Laden", command=self.load_profile
-        )
-        self.load_button.pack(fill="x", pady=8)
-        ttk.Button(left, text="Zustand speichern", command=self.save).pack(fill="x")
-        ttk.Label(
-            left,
-            text=(
-                "Profile werden lokal\ngespeichert. Kein Login"
-                "\nund keine Cloud nötig."
-            ),
-            style="Sub.TLabel",
-        ).pack(anchor="w", pady=12)
-        self.new_button = ttk.Button(
-            left, text="Neue Runde", command=lambda: self.service("neustart")
-        )
-        self.new_button.pack(fill="x", pady=(14, 0))
-
         center = ttk.Frame(body)
-        center.grid(row=0, column=1, sticky="nsew")
+        center.grid(row=0, column=0, sticky="nsew")
         self.room_title = ttk.Label(center, style="Heading.TLabel")
         self.room_title.pack(anchor="w")
         ttk.Label(
             center,
-            text="Live-Ansicht · Möbel werden als Hindernisse berücksichtigt",
+            text="Gesamte Wohnung · Steuerung über das Terminal unten",
             style="Sub.TLabel",
         ).pack(anchor="w", pady=(3, 10))
         self.canvas = tk.Canvas(
@@ -132,7 +102,7 @@ class App:
         self.activity.pack(anchor="w")
 
         right = ttk.Frame(body, width=200)
-        right.grid(row=0, column=2, sticky="ns", padx=(18, 0))
+        right.grid(row=0, column=1, sticky="ns", padx=(18, 0))
         ttk.Label(right, text="ROBOTERSTATUS", style="Heading.TLabel").pack(anchor="w")
         self.battery_text = ttk.Label(right, font=("Segoe UI", 24, "bold"))
         self.battery_text.pack(anchor="w", pady=(8, 0))
@@ -140,33 +110,24 @@ class App:
         self.battery_bar.pack(fill="x", pady=(4, 10))
         self.details = ttk.Label(right, justify="left", style="Sub.TLabel")
         self.details.pack(anchor="w", pady=(0, 14))
-        ttk.Label(right, text="AUFTRAG STARTEN", style="Heading.TLabel").pack(
-            anchor="w", pady=(0, 6)
+        ttk.Label(right, text="BEFEHLSÜBERSICHT", style="Heading.TLabel").pack(
+            anchor="w", pady=(14, 10)
         )
-        self.action_buttons = {}
-        for action in ACTIONS:
-            b = ttk.Button(
-                right,
-                text=action,
-                style="Accent.TButton",
-                command=lambda a=action: self.start(a),
-            )
-            b.pack(fill="x", pady=3)
-            self.action_buttons[action] = b
-        self.stop_button = ttk.Button(right, text="Auftrag stoppen", command=self.stop)
-        self.stop_button.pack(fill="x", pady=(5, 10))
-        self.services = []
-        for label, command in (
-            ("Akku laden", "laden"),
-            ("Spülmittel nachfüllen", "nachfüllen"),
-            ("Wartung durchführen", "wartung"),
-        ):
-            b = ttk.Button(right, text=label, command=lambda c=command: self.service(c))
-            b.pack(fill="x", pady=3)
-            self.services.append(b)
         ttk.Label(
-            right, text="Service wird sofort simuliert.", style="Sub.TLabel"
-        ).pack(anchor="w", pady=6)
+            right,
+            text=(
+                "nutzer Dein Name\nprofile\nraum Küche\nsaugen / wischen / spülen\n"
+                "stopp / status\nladen / nachfüllen\n"
+                "wartung / neustart\nspeichern / hilfe"
+            ),
+            style="Sub.TLabel",
+            justify="left",
+        ).pack(anchor="w")
+        ttk.Label(
+            right,
+            text="Befehl eingeben + Enter.\nRaumwechsel erfolgt sofort.",
+            style="Sub.TLabel",
+        ).pack(anchor="w", pady=16)
 
         bottom = ttk.Frame(shell)
         bottom.grid(row=2, column=0, sticky="ew", pady=(18, 0))
@@ -175,7 +136,7 @@ class App:
         )
         self.history = tk.Text(
             bottom,
-            height=5,
+            height=7,
             width=1,
             bg="#152b37",
             fg="#d1e9e7",
@@ -199,6 +160,8 @@ class App:
         )
 
     def log(self, text):
+        if self.terminal:
+            print(text, flush=True)
         self.history.configure(state="normal")
         self.history.insert("end", text + "\n")
         if int(self.history.index("end-1c").split(".")[0]) > 200:
@@ -208,7 +171,9 @@ class App:
 
     def refresh(self):
         state = self.sim.state
-        self.room_title["text"] = f"{state.room}  /  {state.name}"
+        self.room_title["text"] = (
+            f"Wohnungsübersicht  /  {state.name}  /  Roboter: {state.room}"
+        )
         self.battery_text["text"] = f"{state.battery:.0f} % Akku"
         self.battery_bar["value"] = state.battery
         due = next_service(date.fromisoformat(state.last_service))
@@ -228,19 +193,6 @@ class App:
                 or "Noch keine Aufträge abgeschlossen"
             )
         )
-        for name, b in self.room_buttons.items():
-            b.configure(
-                style="Accent.TButton" if name == state.room else "TButton",
-                state="disabled" if self.sim.busy else "normal",
-            )
-        for action, b in self.action_buttons.items():
-            unavailable = self.sim.busy or (
-                action == "Spülen" and state.room != "Küche"
-            )
-            b["state"] = "disabled" if unavailable else "normal"
-        for b in self.services + [self.load_button, self.new_button]:
-            b["state"] = "disabled" if self.sim.busy else "normal"
-        self.stop_button["state"] = "normal" if self.sim.busy else "disabled"
         self.draw()
 
     def draw(self):
@@ -248,59 +200,89 @@ class App:
             return
         c = self.canvas
         c.delete("all")
-        room = ROOMS[self.sim.state.room]
+        gap, label = 22, 28
         size = min(
-            (max(c.winfo_width(), 100) - 24) / WIDTH,
-            (max(c.winfo_height(), 100) - 24) / HEIGHT,
+            (max(c.winfo_width(), 100) - gap * 3) / (WIDTH * 2),
+            (max(c.winfo_height(), 100) - gap * 3 - label * 2) / (HEIGHT * 2),
         )
-        ox = (c.winfo_width() - WIDTH * size) / 2
-        oy = (c.winfo_height() - HEIGHT * size) / 2
-        cleaned = any(
-            a in self.sim.state.completed[room.name] for a in ("Saugen", "Wischen")
-        )
-        for x in range(WIDTH):
-            for y in range(HEIGHT):
-                color = (
-                    "#bbdfd2"
-                    if ((x, y) in self.sim.visited and self.sim.action != "Spülen")
-                    or cleaned
-                    else "#fbfaf6"
-                )
-                c.create_rectangle(
-                    ox + x * size,
-                    oy + y * size,
-                    ox + (x + 1) * size,
-                    oy + (y + 1) * size,
-                    fill=color,
-                    outline="#e1e5e3",
-                )
-        for name, x, y, w, h in room.furniture:
-            c.create_rectangle(
-                ox + x * size + 2,
-                oy + y * size + 2,
-                ox + (x + w) * size - 2,
-                oy + (y + h) * size - 2,
-                fill=room.accent,
-                outline="",
-            )
+        size = max(2, size)
+        full_w = WIDTH * size * 2 + gap
+        full_h = (HEIGHT * size + label) * 2 + gap
+        left = (c.winfo_width() - full_w) / 2
+        top = (c.winfo_height() - full_h) / 2
+        for index, room in enumerate(ROOMS.values()):
+            ox = left + (index % 2) * (WIDTH * size + gap)
+            oy = top + (index // 2) * (HEIGHT * size + label + gap) + label
+            active = room.name == self.sim.state.room
+            tag = "room:" + room.name
             c.create_text(
-                ox + (x + w / 2) * size,
-                oy + (y + h / 2) * size,
-                text=name,
-                width=max(20, w * size - 4),
-                font=("Segoe UI", 8),
-                fill=INK,
+                ox,
+                oy - 15,
+                anchor="w",
+                text=room.name,
+                font=("Segoe UI", 11, "bold"),
+                fill=TEAL if active else INK,
+                tags=("room-label", tag),
             )
-        x, y = self.sim.position
-        cx, cy = ox + (x + 0.5) * size, oy + (y + 0.5) * size
-        r = size * 0.36
-        c.create_oval(
-            cx - r - 3, cy - r - 3, cx + r + 3, cy + r + 3, fill="#d5f3eb", outline=""
-        )
-        c.create_oval(
-            cx - r, cy - r, cx + r, cy + r, fill=TEAL, outline="white", width=2
-        )
-        c.create_text(cx, cy, text="iS", fill="white", font=("Segoe UI", 10, "bold"))
+            cleaned = any(
+                a in self.sim.state.completed[room.name] for a in ("Saugen", "Wischen")
+            )
+            for x in range(WIDTH):
+                for y in range(HEIGHT):
+                    visited = active and (x, y) in self.sim.visited
+                    color = "#bbdfd2" if visited or cleaned else "#fbfaf6"
+                    c.create_rectangle(
+                        ox + x * size,
+                        oy + y * size,
+                        ox + (x + 1) * size,
+                        oy + (y + 1) * size,
+                        fill=color,
+                        outline="#e1e5e3",
+                        tags=(tag,),
+                    )
+            for name, x, y, w, h in room.furniture:
+                c.create_rectangle(
+                    ox + x * size + 1,
+                    oy + y * size + 1,
+                    ox + (x + w) * size - 1,
+                    oy + (y + h) * size - 1,
+                    fill=room.accent,
+                    outline="",
+                    tags=(tag,),
+                )
+                if w >= 2 and size >= 16:
+                    c.create_text(
+                        ox + (x + w / 2) * size,
+                        oy + (y + h / 2) * size,
+                        text=name,
+                        width=w * size - 2,
+                        font=("Segoe UI", 7),
+                        fill=INK,
+                        tags=(tag,),
+                    )
+            c.create_rectangle(
+                ox,
+                oy,
+                ox + WIDTH * size,
+                oy + HEIGHT * size,
+                outline=TEAL if active else "#a1afb7",
+                width=3 if active else 1,
+                tags=(tag,),
+            )
+            if active:
+                x, y = self.sim.position
+                cx, cy = ox + (x + 0.5) * size, oy + (y + 0.5) * size
+                radius = max(5, size * 0.4)
+                c.create_oval(
+                    cx - radius,
+                    cy - radius,
+                    cx + radius,
+                    cy + radius,
+                    fill=TEAL,
+                    outline="white",
+                    width=2,
+                    tags=("robot", tag),
+                )
 
     def perform(self, function):
         try:
@@ -357,15 +339,14 @@ class App:
             self.log(f"Speichern fehlgeschlagen: {exc}")
             return False
 
-    def load_profile(self):
+    def load_profile(self, name):
         def load():
             if self.sim.busy:
                 raise ValueError("Bitte zuerst den laufenden Auftrag stoppen.")
             self.persist()
-            target = self.store.load(self.profile.get())
+            target = self.store.load(name)
             self.sim = Simulation(target)
             self.persist()
-            self.profile["values"] = sorted(self.store.read())
             return f"Profil {target.name} geladen."
 
         self.perform(load)
@@ -379,11 +360,18 @@ class App:
             self.refresh()
 
     def schedule(self):
+        for _ in range(20):
+            try:
+                text = self.inbox.get_nowait()
+            except queue.Empty:
+                break
+            self.execute(text)
         self.step()
         self.timer = self.root.after(65, self.schedule)
 
     def help(self):
-        self.log("Befehle: raum Küche | saugen | wischen | spülen | stopp | status")
+        self.log("Profil: nutzer Dein Name | profile. Räume: raum Küche | raum Bad")
+        self.log("Aufträge: saugen | wischen | spülen | stopp | status")
         self.log("Service: laden | nachfüllen | wartung | neustart | speichern | hilfe")
         self.log(
             "Saugen: 15 % Akku. Wischen: 20 % + 1 Spülmittel. "
@@ -395,9 +383,19 @@ class App:
         self.command.delete(0, "end")
         if not text:
             return
+        self.execute(text)
+
+    def execute(self, text):
         self.log("> " + text)
         lower = text.casefold()
-        if lower.startswith("raum "):
+        if lower.startswith("nutzer "):
+            self.load_profile(text[7:].strip())
+        elif lower == "profile":
+            self.perform(
+                lambda: "Profile: "
+                + (", ".join(sorted(self.store.read())) or "Noch keine")
+            )
+        elif lower.startswith("raum "):
             name = text[5:].strip().casefold()
             target = next((n for n in ROOMS if n.casefold() == name), text[5:].strip())
             self.room(target)
@@ -436,5 +434,15 @@ class App:
 
 def main():
     root = tk.Tk()
-    App(root)
+    terminal = "--terminal" in sys.argv
+    app = App(root, terminal=terminal)
+    if terminal:
+
+        def read_commands():
+            for line in sys.stdin:
+                text = line.strip()
+                if text:
+                    app.inbox.put(text)
+
+        threading.Thread(target=read_commands, daemon=True).start()
     root.mainloop()

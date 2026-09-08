@@ -28,24 +28,22 @@ def app(tmp_path, root):
         child.destroy()
 
 
-def test_buttons_drive_full_job_and_profile_reload(app):
-    app.profile.set("Testnutzer")
-    app.load_button.invoke()
-    app.room_buttons["Küche"].invoke()
-    app.action_buttons["Spülen"].invoke()
+def test_terminal_drives_full_job_and_profile_reload(app):
+    for command in ("nutzer Testnutzer", "raum Küche", "spülen"):
+        app.command.insert(0, command)
+        app.submit()
     assert app.sim.busy
-    assert str(app.room_buttons["Bad"]["state"]) == "disabled"
+    app.execute("raum Bad")
+    assert app.sim.state.room == "Küche"
     while app.sim.busy:
         app.step()
     assert app.sim.state.completed["Küche"] == ["Spülen"]
     assert app.progress["value"] == 100
     saved = app.store.load("Testnutzer")
     assert saved.detergent == 3
-    app.profile.set("Andere Person")
-    app.load_button.invoke()
+    app.execute("nutzer Andere Person")
     assert app.sim.state.room == "Wohnzimmer"
-    app.profile.set("Testnutzer")
-    app.load_button.invoke()
+    app.execute("nutzer Testnutzer")
     assert app.sim.state.completed["Küche"] == ["Spülen"]
 
 
@@ -56,7 +54,7 @@ def test_invalid_command_recovers_and_stop_works(app):
     assert app.sim.state.room == "Bad"
     assert app.sim.busy
     app.step()
-    app.stop_button.invoke()
+    app.execute("stopp")
     assert not app.sim.busy
     assert "Unbekannter Befehl" in app.history.get("1.0", "end")
 
@@ -83,9 +81,7 @@ def test_window_layout_keeps_controls_inside_window(app):
         for widget in [
             app.command,
             app.history,
-            *app.services,
-            *app.room_buttons.values(),
-            app.profile,
+            app.details,
         ]:
             right = widget.winfo_rootx() - app.root.winfo_rootx() + widget.winfo_width()
             bottom = (
@@ -94,3 +90,24 @@ def test_window_layout_keeps_controls_inside_window(app):
             assert right <= app.root.winfo_width(), (str(widget), right)
             assert bottom <= app.root.winfo_height(), (str(widget), bottom)
     app.root.withdraw()
+
+
+def test_all_rooms_stay_visible_and_robot_changes_room(app):
+    from mvp.core import ROOMS
+
+    for name in ROOMS:
+        app.execute("raum " + name)
+        labels = app.canvas.find_withtag("room-label")
+        assert {app.canvas.itemcget(item, "text") for item in labels} == set(ROOMS)
+        robot = app.canvas.find_withtag("robot")
+        assert len(robot) == 1
+        assert "room:" + name in app.canvas.gettags(robot[0])
+
+
+def test_external_terminal_queue_uses_same_controller(app):
+    app.inbox.put("raum Bad")
+    app.inbox.put("saugen")
+    app.schedule()
+    assert app.sim.state.room == "Bad"
+    assert app.sim.busy
+    assert app.sim.done == 1
