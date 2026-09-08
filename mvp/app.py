@@ -9,7 +9,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 
 from .core import ACTIONS, ROOMS, Simulation, Store, next_service
-from .pixel_view import PixelView
+from .mockup_view import MockupView
 
 BG = "#eef2f5"
 INK = "#172b3a"
@@ -88,14 +88,14 @@ class App:
             style="Sub.TLabel",
         ).pack(anchor="w", pady=(3, 10))
         self.canvas = tk.Canvas(
-            center, bg="#354954", highlightthickness=0, width=600, height=420
+            center, bg="white", highlightthickness=0, width=600, height=420
         )
         self.canvas.pack(fill="both", expand=True)
-        self.pixel_view = PixelView(self.canvas)
+        self.mockup_view = MockupView(self.canvas)
         self.canvas.bind("<Configure>", lambda event: self.draw())
         ttk.Label(
             center,
-            text="Top-View · Roboter-Sprite · Lichtpunkte: bearbeitete Fläche",
+            text="Original-Mockups · Grüner Punkt: aktuelle Roboterposition",
             style="Sub.TLabel",
         ).pack(anchor="w", pady=8)
         self.progress = ttk.Progressbar(center, maximum=100)
@@ -198,9 +198,9 @@ class App:
         self.draw()
 
     def draw(self):
-        if not hasattr(self, "pixel_view"):
+        if not hasattr(self, "mockup_view"):
             return
-        self.pixel_view.draw(self.sim)
+        self.mockup_view.draw(self.sim)
 
     def perform(self, function):
         try:

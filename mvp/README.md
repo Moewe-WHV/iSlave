@@ -2,13 +2,13 @@
 
 Eigenständige Haushaltsroboter-Simulation. Alle ursprünglichen Projektdateien bleiben unverändert. Die Raumpläne orientieren sich an den vorhandenen Mockups; die isolierte Anwendung übernimmt keine importseitig startenden Fenster aus den Prototypen.
 
-## Pixelgrafik
+## Darstellung nach den Original-Mockups
 
-Die Möbelanordnung ist aus `docs/mockups/Wohnzimmer.pdf`, `Küche.pdf`, `Schlafzimmer.pdf` und der neueren `BadezimmerV2.pdf` auf das 12×9-Raster übertragen. Wohnzimmer: Ladestation oben links, Fernsehtisch oben und blaues L-Sofa rechts/unten. Küche: Arbeitsfläche mit Kochfeld links, Kühlschrank darunter, Tisch mit vier Stühlen rechts. Schlafzimmer: Bett oben mittig, zwei Nachttische, Kleiderschrank unten. Bad: Dusche und Wanne links; Waschbecken, Toilette, Waschmaschine und Trockner oben. Möbel und Kollisionsflächen verwenden dieselben Koordinaten. Die Mockups definieren keine gemeinsame Wohnungsanordnung; die bestehende Vier-Raum-Übersicht bleibt erhalten.
+Die Ansicht zeigt die tatsächlichen, aus den PDFs extrahierten Raumzeichnungen. Farben, Möbelkonturen, Nummerierung und Proportionen bleiben erhalten. Lediglich weißer Rand außerhalb des Raumplans wird bei der Anzeige ausgeblendet; das Seitenverhältnis bleibt unverändert. Als Positionsanzeige wird ein grüner Punkt darübergelegt. Es gibt keine Pixelgestaltung, ergänzten Möbel, Fenster, Türen oder Flure.
 
-Die gemeinsame Karte verwendet eigene Pixelgrafiken im Stil klassischer Top-View-Rollenspiele: Holzböden, Fliesen, Wände, Fenster, Türen, Möbel und ein Roboter-Sprite. Es werden keine Pokémon-Assets verwendet. Die Darstellung liegt in `pixel_view.py`, benötigt keine zusätzlichen Pakete und übernimmt Raumgeometrie und Roboterzustand aus der bestehenden Simulation. Flure und Türen stellen die Verbindung grafisch dar; Raumwechsel werden weiterhin sofort simuliert.
+Quellen: `docs/mockups/Wohnzimmer.pdf`, `Küche.pdf`, `Schlafzimmer.pdf` und `BadezimmerV2.pdf`. Die Originaldateien bleiben unverändert. Die daraus extrahierten Bilder liegen unter `mvp/assets/mockups/`. `mockup_view.py` stellt sie in Tkinter dar. Die gemeinsame Anordnung dient der Übersicht; sie ist kein zusätzlicher Wohnungsgrundriss. Die Simulationsbewegung verwendet weiterhin das bestehende 12×9-Raster.
 
-Diese Überarbeitung betrifft ausschließlich die Grafik. Die zuvor festgestellten Abweichungen von den GitHub-User-Stories (unter anderem Nutzerpflicht, geführter Dialog, Aktionsverbrauch, Equipment, Highscore und ausschließlich externe Terminaleingabe) werden dadurch noch nicht behoben.
+Die bereits dokumentierten funktionalen Abweichungen von den User Stories sind durch diese reine Darstellungsänderung nicht behoben.
 
 ## Start
 
