@@ -1,6 +1,6 @@
 import tkinter as tk
-from template_raum import Raum             #Alles mit template davor kann geändert werden
-from template_roboter import Roboter
+from badezimmer_raum import Raum             #Alles mit template davor kann geändert werden
+from badezimmer_roboter import Roboter
 
 # Konfiguration des Rasters 
 TILE_SIZE = 64      # Größe der Kacheln in Pixel (zb 64x64 px)
@@ -9,25 +9,37 @@ TILE_SIZE = 64      # Größe der Kacheln in Pixel (zb 64x64 px)
 
 kachel_farben = {}
 
-holz_kacheln = [(0,0), (0,1), (0,2), (0,3), (0,4), (0,5), (0,6), (0,7), (0,8), (1,0), (1,3), (1,4), (1,5), (1,6), (1,7), (1,8), (5,2), (5,3), (6,2), (6,3), (7,2), (7,3)]
-for koordinate in holz_kacheln:
-    kachel_farben[koordinate] = "#b5651d"
+badewanne_aussen_kacheln = [(0,9), (0,8), (0,7), (0,6), (0,5), (1,9), (1,5), (2,9), (2,8), (2,7), (2,6), (2,5)]
+for koordinate in badewanne_aussen_kacheln:
+    kachel_farben[koordinate] = "#0e9ef1"
 
-herd_kacheln = [(1,1), (1,2)]
-for koordinate in herd_kacheln:
-    kachel_farben[koordinate] = "#080808"
+badewanne_innen_kacheln = [(1,8), (1,7), (1,6)]
+for koordinate in badewanne_innen_kacheln:
+    kachel_farben[koordinate] = "#20E6EC"
 
-stuehle_kacheln = [(5,1), (7,1), (5,4), (7,4)]
-for koordinate in stuehle_kacheln:
-    kachel_farben[koordinate] = "#EE8F22"
+dusche_kacheln = [(0,0), (0,1), (0,2), (1,0), (1,1), (1,2), (2,0), (2,1), (2,2)]
+for koordinate in dusche_kacheln:
+    kachel_farben[koordinate] = "#0e9ef1"
 
-fridge_kacheln = [(0,11), (0,10), (0,9), (1,11), (1,10), (1,9)]
-for koordinate in fridge_kacheln:
-    kachel_farben[koordinate] = "#A5A19D"
+waschbecken_kacheln = [(6,0), (7,0)]
+for koordinate in waschbecken_kacheln:
+    kachel_farben[koordinate] = "#A7A6A5"
+
+toilette_kacheln = [(4,0), (4,1)]
+for koordinate in toilette_kacheln:
+    kachel_farben[koordinate] = "#A7A6A5"
+
+trockner_kacheln = [(11,0), (11,1), (10,0), (10,1)]
+for koordinate in trockner_kacheln:
+    kachel_farben[koordinate] = "#555451"
+
+waschmaschine_kacheln = [(8,0), (8,1), (9,0), (9,1)]
+for koordinate in waschmaschine_kacheln:
+    kachel_farben[koordinate] = "#40413F"
 
 zimmer = Raum(
     name="Zimmer", 
-    hindernisse=[(1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (1, 10), (1, 11), (1, 12), (5, 2), (5, 3), (6, 2), (6, 3), (7, 2), (7, 3)], #wenn kein Hindernis, dann None
+    hindernisse=[(0,0), (1,0), (2,0), (4,0), (6,0), (7,0), (8,0), (8,1), (9,0), (9,1), (11,0), (11,1), (10,0), (10,1), (0,9), (0,8), (0,7), (0,6), (0,5), (1,9), (2,9)], #wenn kein Hindernis, dann None
     kachel_farben=kachel_farben,
 ) 
 
@@ -63,7 +75,7 @@ def zeichne_karte():
             elif ist_hinderniss:
                 fill = "#555555"                                 # Fallback: Hindernis ohne eigene Farbe -> Standardgrau
             else:
-                fill = "#cab920"                                     # sonst: Standardboden
+                fill = "#0bccfc"                                     # sonst: Standardboden
             
             canvas.create_rectangle(x0, y0, x1, y1, fill=fill, outline="#999999")
 
