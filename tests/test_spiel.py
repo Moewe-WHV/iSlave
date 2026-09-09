@@ -237,6 +237,34 @@ def test_SPIEL_T21_fleck_verbraucht_spuelmittel(punktedatei):
     assert spiel.roboter.ausruestung.spuelmittel == 1
 
 
+# SPIEL-T30: Spülmittel wird auf vier Einheiten aufgefüllt
+def test_SPIEL_T30_spuelmittel_auffuellen(spiel):
+    text = meldungstext(spiel.spuelmittel_auffuellen())
+
+    assert "4 Einheiten Spülmittel nachgefüllt" in text
+    assert spiel.roboter.ausruestung.spuelmittel == 4
+
+
+# SPIEL-T31: Ein teilweise gefüllter Bestand wird nur ergänzt
+def test_SPIEL_T31_auffuellen_ergaenzt_nur(punktedatei):
+    spiel = neues_spiel(punktedatei, spuelmittel=3)
+
+    text = meldungstext(spiel.spuelmittel_auffuellen())
+
+    assert "1 Einheiten Spülmittel nachgefüllt" in text
+    assert spiel.roboter.ausruestung.spuelmittel == 4
+
+
+# SPIEL-T32: Ein voller Bestand wird nicht überschritten
+def test_SPIEL_T32_auffuellen_bei_vollem_bestand(punktedatei):
+    spiel = neues_spiel(punktedatei, spuelmittel=4)
+
+    text = meldungstext(spiel.spuelmittel_auffuellen())
+
+    assert "bereits voll" in text
+    assert spiel.roboter.ausruestung.spuelmittel == 4
+
+
 # SPIEL-T22: Ohne Spülmittel sucht der Roboter danach
 def test_SPIEL_T22_roboter_sucht_spuelmittel(spiel):
     assert spiel.roboter.ausruestung.spuelmittel == 0

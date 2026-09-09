@@ -64,9 +64,9 @@ MENUEPUNKTE = {
     "1": "auftrag",
     "2": "aufsatz",
     "3": "laden",
-    "4": "wartung",
-    "5": "karte",
-    "6": "rangliste",
+    "4": "nachfuellen",
+    "5": "wartung",
+    "6": "karte",
     "0": "beenden",
 }
 
@@ -132,9 +132,9 @@ def terminal_menu(spiel):
         print("\n1 - Auftrag starten")
         print("2 - Aufsatz wählen")
         print("3 - Akku laden")
-        print("4 - Wartung durchführen")
-        print("5 - Karte anzeigen")
-        print("6 - Rangliste anzeigen")
+        print("4 - Spülmittel auffüllen")
+        print("5 - Wartung durchführen")
+        print("6 - Karte anzeigen")
         print("0 - Beenden")
 
         ergebnis = menu_auswahl(input("\nAuswahl: ").strip())
@@ -145,7 +145,6 @@ def terminal_menu(spiel):
 
         if ergebnis == "beenden":
             meldungen_ausgeben(spiel.beenden())
-            spiel.highscore.rangliste_anzeigen()
             return spiel
 
         if ergebnis == "auftrag":
@@ -159,15 +158,12 @@ def terminal_menu(spiel):
         elif ergebnis == "laden":
             meldungen_ausgeben(spiel.akku_laden())
 
+        elif ergebnis == "nachfuellen":
+            meldungen_ausgeben(spiel.spuelmittel_auffuellen())
+
         elif ergebnis == "wartung":
             meldungen_ausgeben(spiel.wartung_ausfuehren())
 
         elif ergebnis == "karte":
             print()
             print(spiel.karte_als_text())
-
-        elif ergebnis == "rangliste":
-            spiel.highscore.rangliste_anzeigen()
-
-        elif ergebnis == "beenden":
-            return

@@ -17,18 +17,34 @@ pip install -r requirements-dev.txt
 ```
 
 ## Starten
+
+**Ohne Terminal:** im Explorer in den Projektordner gehen und
+**`iSlave starten.bat`** doppelklicken. Die Datei sucht selbst nach
+`.venv` bzw. der installierten Python-Version und öffnet das Fenster mit
+der Kartenansicht.
+
+**Aus einem Terminal:**
 ```bash
 python src/main.py
 ```
-Mit Kartenansicht. Nur Terminal (z. B. ohne Bildschirm):
+Nur Terminal, ohne Kartenansicht (z. B. ohne Bildschirm):
 ```bash
 python src/main.py --ohne-gui
 ```
 
-Ablauf: Nutzer auswählen oder anlegen, danach das Menü. Gesteuert wird
-ausschließlich über das Terminal, die Kartenansicht ist reine Anzeige.
-Punktestand und Roboterzustand werden beim Beenden im Nutzerprofil
-gespeichert (`src/nutzer.json`, `highscores.json` – beide nicht im Repo).
+Ablauf: Nutzer auswählen oder anlegen, danach das Menü:
+
+```
+1 - Auftrag starten        4 - Spülmittel auffüllen
+2 - Aufsatz wählen         5 - Wartung durchführen
+3 - Akku laden             6 - Karte anzeigen
+                           0 - Beenden
+```
+
+Gesteuert wird ausschließlich über das Terminal, die Kartenansicht ist
+reine Anzeige. Punktestand und Roboterzustand werden beim Beenden im
+Nutzerprofil gespeichert (`src/nutzer.json`, `highscores.json` – beide
+nicht im Repo).
 
 ## Tests
 ```bash
@@ -60,6 +76,7 @@ iSlave/
 │   ├── highscore.py                # Sauberkeitspunkte
 │   └── nutzerverwaltung.py         # Nutzer und Profile
 ├── tests/                          # Test-Skripte, ein Modul je Datei
+├── iSlave starten.bat              # Start per Doppelklick
 ├── .gitignore                      # Was soll beim push ignoriert werden
 ├── CONTRIBUTING.md                 # GitHub Projekt-Knigge
 ├── pyproject.toml                  # black-Konfiguration

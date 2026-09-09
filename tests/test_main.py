@@ -192,7 +192,7 @@ def test_MAIN_T11_laden_und_wartung_ueber_das_menue(ordner, monkeypatch, capsys)
         heute=HEUTE,
         highscore_datei=os.path.join(ordner, "highscores.json"),
     )
-    eingaben = iter(["3", "4", "0"])  # laden, Wartung, beenden
+    eingaben = iter(["3", "5", "0"])  # laden, Wartung, beenden
     monkeypatch.setattr("builtins.input", lambda *args: next(eingaben))
 
     terminal_menu(spiel)
@@ -202,6 +202,38 @@ def test_MAIN_T11_laden_und_wartung_ueber_das_menue(ordner, monkeypatch, capsys)
     assert "Wartung durchgeführt." in ausgabe
     assert spiel.akku.akkustand == 100
     assert not spiel.wartung_ist_faellig()
+
+
+# MAIN-T13: Spülmittel auffüllen ist über das Menü erreichbar
+def test_MAIN_T13_spuelmittel_ueber_das_menue(spiel, monkeypatch, capsys):
+    eingaben = iter(["4", "0"])  # nachfüllen, beenden
+    monkeypatch.setattr("builtins.input", lambda *args: next(eingaben))
+
+    terminal_menu(spiel)
+
+    assert "Spülmittel nachgefüllt" in capsys.readouterr().out
+    assert spiel.roboter.ausruestung.spuelmittel == 4
+
+
+# MAIN-T14: Die Karte ist über Menüpunkt 6 erreichbar
+def test_MAIN_T14_karte_ueber_menuepunkt_sechs(spiel, monkeypatch, capsys):
+    eingaben = iter(["6", "0"])
+    monkeypatch.setattr("builtins.input", lambda *args: next(eingaben))
+
+    terminal_menu(spiel)
+
+    assert "R" in capsys.readouterr().out
+
+
+# MAIN-T15: Beim Beenden wird keine Rangliste mehr angezeigt
+def test_MAIN_T15_keine_rangliste_beim_beenden(spiel, monkeypatch, capsys):
+    monkeypatch.setattr("builtins.input", lambda *args: "0")
+
+    terminal_menu(spiel)
+    ausgabe = capsys.readouterr().out
+
+    assert "RANGLISTE" not in ausgabe
+    assert "gespeichert!" in ausgabe
 
 
 # MAIN-T12: Ohne Nutzer wird die Simulation nicht gestartet

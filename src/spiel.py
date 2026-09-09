@@ -13,6 +13,7 @@ Terminalausgabe pruefen.
 
 from datetime import date
 
+import equipment
 import karte
 import wartung
 from akku import Akku
@@ -119,6 +120,23 @@ class Spiel:
                 "Achtung: Die Batterie ist fast am Ende ihrer Lebensdauer!"
             )
         return meldungen
+
+    # -- Spülmittel (#26) -----------------------------------------------
+    def spuelmittel_auffuellen(self) -> list:
+        """Füllt den Spülmittelbestand auf die vier Einheiten auf."""
+        ausruestung = self.roboter.ausruestung
+        if ausruestung.ist_voll():
+            return [f"Spülmittel ist bereits voll ({equipment.MAX_SPUELMITTEL}/4)."]
+
+        vorher = ausruestung.spuelmittel
+        while ausruestung.spuelmittel_aufnehmen():
+            pass
+
+        nachgefuellt = ausruestung.spuelmittel - vorher
+        return [
+            f"{nachgefuellt} Einheiten Spülmittel nachgefüllt. "
+            f"Bestand: {ausruestung.spuelmittel}/{equipment.MAX_SPUELMITTEL}."
+        ]
 
     def einsatzbereit(self) -> list:
         """Prüft Wartung und Akku. Leere Liste bedeutet einsatzbereit."""
