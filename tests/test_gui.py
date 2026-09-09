@@ -2,10 +2,18 @@
 
 Geprueft werden nur die reinen Hilfsfunktionen. Sie brauchen kein
 Fenster, damit die Tests auch auf einem Rechner ohne Bildschirm laufen.
+
+Ist Tkinter gar nicht installiert - wie auf dem CI-Runner -, wird die
+ganze Datei uebersprungen. gui.py braucht Tkinter zwingend, main.py
+faengt das Fehlen ab und laeuft dann nur im Terminal weiter.
 """
 
-import karte
-from gui import (
+import pytest
+
+pytest.importorskip("tkinter", reason="Tkinter ist nicht installiert")
+
+import karte  # noqa: E402
+from gui import (  # noqa: E402
     FARBEN,
     FELDGROESSE,
     RANDBREITE,
