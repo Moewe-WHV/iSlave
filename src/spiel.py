@@ -197,33 +197,45 @@ class Spiel:
             return hindernis
 
         if aktion == "Spülen":
-            meldungen = self._spuelen()
+            meldungen, erledigt = self._spuelen()
         else:
-            meldungen = self._reinigen(aktion)
+            meldungen, erledigt = self._reinigen(aktion)
+
+        # Eine Aktion, die nichts erledigt hat, kostet keinen Akku.
+        if not erledigt:
+            meldungen.append("Kein Akku verbraucht.")
+            return meldungen
 
         self.akku.verbrauchen(self.aktionen.akku_verbrauch(aktion))
         meldungen.append(f"{aktion} beendet. Akkustand: {self.akku.akkustand} %.")
         return meldungen
 
-    def _spuelen(self) -> list:
-        """Stationäre Aufgabe mit einer Einheit Spülmittel (#25)."""
+    def _spuelen(self) -> tuple:
+        """Stationäre Aufgabe mit einer Einheit Spülmittel (#25).
+
+        Gibt die Meldungen und die Angabe zurück, ob gespült wurde.
+        """
         meldungen = []
 
         if not self.roboter.ausruestung.hat_spuelmittel():
             meldungen.append("Kein Spülmittel vorhanden.")
             meldungen += self._spuelmittel_suchen()
             if not self.roboter.ausruestung.hat_spuelmittel():
-                return meldungen + ["Spülen nicht möglich!"]
+                return meldungen + ["Spülen nicht möglich!"], False
 
         self.roboter.ausruestung.spuelmittel_verbrauchen()
         meldungen.append("Spülen mit Spülmittel ausgeführt.")
-        return meldungen
+        return meldungen, True
 
-    def _reinigen(self, aktion: str) -> list:
-        """Beseitigt alle passenden Verschmutzungen im Raum (#30)."""
+    def _reinigen(self, aktion: str) -> tuple:
+        """Beseitigt alle passenden Verschmutzungen im Raum (#30).
+
+        Gibt die Meldungen und die Angabe zurück, ob mindestens eine
+        Verschmutzung beseitigt wurde.
+        """
         if self.aktionen.braucht_aufsatz(aktion):
             if self.roboter.ausruestung.aufsatz is None:
-                return ["Kein Aufsatz gewählt. Bitte Aufsatz 1 oder 2 wählen."]
+                return ["Kein Aufsatz gewählt. Bitte Aufsatz 1 oder 2 wählen."], False
 
         ziele = self.aktionen.ziel_verschmutzungen(aktion)
         offen = [
@@ -233,36 +245,48 @@ class Spiel:
         ]
 
         if not offen:
-            return [f"Im {self.aktueller_raum} gibt es nichts zu {aktion.lower()}."]
+            meldung = f"Im {self.aktueller_raum} gibt es nichts zu {aktion.lower()}."
+            return [meldung], False
 
         meldungen = []
+        erledigt = False
         for feld in offen:
             verschmutzung = self.karte.zeichen(*feld)
             meldungen += self._fahren_nach(feld)
-            meldungen += self._verschmutzung_bearbeiten(feld, aktion, verschmutzung)
-        return meldungen
+            teilmeldungen, teilerfolg = self._verschmutzung_bearbeiten(
+                feld, aktion, verschmutzung
+            )
+            meldungen += teilmeldungen
+            erledigt = erledigt or teilerfolg
+        return meldungen, erledigt
 
     def _verschmutzung_bearbeiten(
         self, feld: tuple, aktion: str, verschmutzung: str
-    ) -> list:
-        """Prüft Aufsatz und Material und beseitigt die Verschmutzung."""
+    ) -> tuple:
+        """Prüft Aufsatz und Material und beseitigt die Verschmutzung.
+
+        Gibt die Meldungen und die Angabe zurück, ob beseitigt wurde.
+        """
         if self.roboter.position != feld:
-            return []
+            return [], False
 
         if self.aktionen.braucht_aufsatz(aktion):
             if not self.roboter.ausruestung.aufsatz_passt(verschmutzung):
                 passend = self.roboter.ausruestung.passender_aufsatz(verschmutzung)
-                return [
-                    f"Falscher Aufsatz für {self._bezeichnung(verschmutzung)}. "
-                    f"Benötigt wird Aufsatz {passend}."
-                ]
+                return (
+                    [
+                        f"Falscher Aufsatz für {self._bezeichnung(verschmutzung)}. "
+                        f"Benötigt wird Aufsatz {passend}."
+                    ],
+                    False,
+                )
 
         meldungen = []
         if self.aktionen.braucht_spuelmittel(aktion):
             if not self.roboter.ausruestung.hat_spuelmittel():
                 meldungen += self._spuelmittel_suchen()
                 if not self.roboter.ausruestung.hat_spuelmittel():
-                    return meldungen + ["Kein Spülmittel gefunden."]
+                    return meldungen + ["Kein Spülmittel gefunden."], False
                 meldungen += self._fahren_nach(feld)
             self.roboter.ausruestung.spuelmittel_verbrauchen()
 
@@ -274,7 +298,7 @@ class Spiel:
             self.highscore.punkte += punkte
             meldungen.append(f"+{punkte} SP! Aktuelle SP: {self.highscore.punkte}")
 
-        return meldungen
+        return meldungen, True
 
     # -- Bewegung und Aufnahme (#26, #28, #30) --------------------------
     def _fahren_nach(self, ziel: tuple) -> list:

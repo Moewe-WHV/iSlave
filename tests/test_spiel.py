@@ -282,6 +282,56 @@ def test_SPIEL_T23_meldung_wenn_nichts_zu_tun(spiel):
     assert "nichts zu wischen" in meldungstext(spiel.aktion_ausfuehren("Wischen"))
 
 
+# SPIEL-T33: Eine Aktion ohne Arbeit kostet keinen Akku
+def test_SPIEL_T33_aktion_ohne_arbeit_kostet_nichts(spiel):
+    spiel.aktion_ausfuehren("Wischen")  # der Fleck ist danach weg
+    vorher = spiel.akku.akkustand
+
+    text = meldungstext(spiel.aktion_ausfuehren("Wischen"))
+
+    assert spiel.akku.akkustand == vorher
+    assert "Kein Akku verbraucht." in text
+    assert "Wischen beendet" not in text
+
+
+# SPIEL-T34: Saugen ohne Aufsatz kostet keinen Akku
+def test_SPIEL_T34_saugen_ohne_aufsatz_kostet_nichts(spiel):
+    vorher = spiel.akku.akkustand
+
+    text = meldungstext(spiel.aktion_ausfuehren("Saugen"))
+
+    assert spiel.akku.akkustand == vorher
+    assert "Kein Aufsatz gewählt" in text
+    assert "Kein Akku verbraucht." in text
+
+
+# SPIEL-T35: Passt kein Aufsatz zu den Verschmutzungen, bleibt der Akku voll
+def test_SPIEL_T35_nur_falscher_aufsatz_kostet_nichts(punktedatei):
+    spiel = neues_spiel(punktedatei, akkustand=100)
+    spiel.raum_wechseln("Bad")  # im Bad liegt nur eine Staubansammlung
+    spiel.aufsatz_waehlen(1)  # Aufsatz fuer Fusseln, passt nicht
+    vorher = spiel.akku.akkustand
+
+    text = meldungstext(spiel.aktion_ausfuehren("Saugen"))
+
+    assert "Falscher Aufsatz" in text
+    assert spiel.akku.akkustand == vorher
+    assert "Kein Akku verbraucht." in text
+
+
+# SPIEL-T36: Spülen ohne erreichbares Spülmittel kostet keinen Akku
+def test_SPIEL_T36_spuelen_ohne_spuelmittel_kostet_nichts(spiel):
+    for x, y in spiel.karte.suchen(karte.SPUELMITTEL):
+        spiel.karte.feld_leeren(x, y)  # kein Vorrat mehr in der Wohnung
+    vorher = spiel.akku.akkustand
+
+    text = meldungstext(spiel.aktion_ausfuehren("Spülen"))
+
+    assert "Spülen nicht möglich!" in text
+    assert spiel.akku.akkustand == vorher
+    assert "Kein Akku verbraucht." in text
+
+
 # SPIEL-T24: Gegenstände auf dem Weg werden automatisch aufgenommen
 def test_SPIEL_T24_gegenstaende_werden_aufgenommen(spiel):
     ladekabel = spiel.karte.suchen(karte.LADEKABEL)[0]
