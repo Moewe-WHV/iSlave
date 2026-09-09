@@ -1,0 +1,9 @@
+# Konfiguration fuer black.
+#
+# src/frontend enthaelt die Tkinter- und Pygame-Prototypen. Sie sind
+# bereits in .flake8 vom Linting ausgenommen; black hatte diesen
+# Ausschluss bisher nicht und liess deshalb "black --check src tests"
+# in der CI fehlschlagen.
+[tool.black]
+line-length = 88
+force-exclude = "src/frontend"

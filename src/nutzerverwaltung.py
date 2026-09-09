@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import sys
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import datetime
 from pathlib import Path
 
@@ -38,10 +38,20 @@ class KeinNutzerAngemeldetError(RuntimeError):
 # ======================================================================
 @dataclass(frozen=True)
 class Nutzer:
-    """Ein einzelner Nutzerdatensatz."""
+    """Ein einzelner Nutzerdatensatz mit seinem Roboterzustand.
+
+    Die Zustandsfelder haben Vorgabewerte, damit aeltere Dateien ohne
+    diese Felder weiterhin gelesen werden koennen.
+    """
 
     name: str
     erstellt_am: str
+    akkustand: int = 90
+    zyklen_zaehler: int = 2
+    verbrauchte_kapazitaet: int = 0
+    letzte_wartung: str = ""
+    punkte: int = 0
+    spuelmittel: int = 0
 
     @classmethod
     def neu(cls, name: str) -> "Nutzer":
@@ -50,10 +60,33 @@ class Nutzer:
 
     @classmethod
     def aus_dict(cls, daten: dict) -> "Nutzer":
-        return cls(name=daten["name"], erstellt_am=daten.get("erstellt_am", ""))
+        return cls(
+            name=daten["name"],
+            erstellt_am=daten.get("erstellt_am", ""),
+            akkustand=daten.get("akkustand", 90),
+            zyklen_zaehler=daten.get("zyklen_zaehler", 2),
+            verbrauchte_kapazitaet=daten.get("verbrauchte_kapazitaet", 0),
+            letzte_wartung=daten.get("letzte_wartung", ""),
+            punkte=daten.get("punkte", 0),
+            spuelmittel=daten.get("spuelmittel", 0),
+        )
 
     def als_dict(self) -> dict:
         return asdict(self)
+
+    def mit_profil(self, daten: dict) -> "Nutzer":
+        """Gibt eine Kopie mit aktualisiertem Roboterzustand zurueck."""
+        return replace(
+            self,
+            akkustand=daten.get("akkustand", self.akkustand),
+            zyklen_zaehler=daten.get("zyklen_zaehler", self.zyklen_zaehler),
+            verbrauchte_kapazitaet=daten.get(
+                "verbrauchte_kapazitaet", self.verbrauchte_kapazitaet
+            ),
+            letzte_wartung=daten.get("letzte_wartung", self.letzte_wartung),
+            punkte=daten.get("punkte", self.punkte),
+            spuelmittel=daten.get("spuelmittel", self.spuelmittel),
+        )
 
 
 # ======================================================================
@@ -81,7 +114,10 @@ class Nutzerverwaltung:
                 f"'{self.datei}' ist keine gueltige JSON-Datei: {fehler}"
             ) from fehler
 
-        eintraege = rohdaten.get("nutzer", []) if isinstance(rohdaten, dict) else rohdaten
+        if isinstance(rohdaten, dict):
+            eintraege = rohdaten.get("nutzer", [])
+        else:
+            eintraege = rohdaten
         self._nutzer = [Nutzer.aus_dict(eintrag) for eintrag in eintraege]
 
     def speichern(self) -> None:
@@ -131,7 +167,9 @@ class Nutzerverwaltung:
         if not name:
             raise UngueltigerNutzernameError("Der Nutzername darf nicht leer sein.")
         if self.existiert(name):
-            raise NutzernameVergebenError(f"Der Nutzername '{name}' ist bereits vergeben.")
+            raise NutzernameVergebenError(
+                f"Der Nutzername '{name}' ist bereits vergeben."
+            )
 
         nutzer = Nutzer.neu(name)
         self._nutzer.append(nutzer)
@@ -142,6 +180,21 @@ class Nutzerverwaltung:
         nutzer = self.finden(name)
         self._nutzer.remove(nutzer)
         self.speichern()
+
+    def profil_speichern(self, nutzer: Nutzer, daten: dict) -> Nutzer:
+        """Uebernimmt den Roboterzustand eines Nutzers und speichert ihn."""
+        aktualisiert = nutzer.mit_profil(daten)
+        for index, vorhanden in enumerate(self._nutzer):
+            if self._schluessel(vorhanden.name) == self._schluessel(nutzer.name):
+                self._nutzer[index] = aktualisiert
+                break
+        else:
+            raise NutzerNichtGefundenError(
+                f"Es gibt keinen Nutzer mit dem Namen '{nutzer.name}'."
+            )
+
+        self.speichern()
+        return aktualisiert
 
 
 # ======================================================================

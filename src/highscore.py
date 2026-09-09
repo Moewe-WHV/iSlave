@@ -43,22 +43,52 @@ class Highscore:
         except (json.JSONDecodeError, IOError):
             return []
 
-    def spiel_beenden_und_speichern(self):
-        """Fragt den Nutzernamen ab und fügt den Eintrag zur Rangliste hinzu."""
+    def punkte_von(self, nutzername: str) -> int:
+        """Gespeicherte SP eines Nutzers, 0 wenn er noch nicht gespielt hat."""
+        for eintrag in self.alle_highscores_laden():
+            if eintrag.get("name") == nutzername:
+                return eintrag.get("punkte", 0)
+        return 0
+
+    def punkte_setzen(self, punkte: int) -> int:
+        """Übernimmt einen gespeicherten Punktestand beim Einloggen."""
+        self.punkte = punkte
+        return self.punkte
+
+    def speichern(self, nutzername: str) -> list:
+        """Speichert die SP des Nutzers, ohne nach dem Namen zu fragen.
+
+        Jeder Nutzer hat genau einen Eintrag (#31). Spielt er erneut,
+        wird sein bisheriger Eintrag aktualisiert.
+        """
+        scores = self.alle_highscores_laden()
+
+        for eintrag in scores:
+            if eintrag.get("name") == nutzername:
+                eintrag["punkte"] = self.punkte
+                break
+        else:
+            scores.append({"name": nutzername, "punkte": self.punkte})
+
+        with open(self.dateiname, "w", encoding="utf-8") as datei:
+            json.dump(scores, datei, ensure_ascii=False, indent=4)
+
+        return scores
+
+    def spiel_beenden_und_speichern(self, nutzername: str = None):
+        """Speichert den Punktestand und zeigt die Rangliste.
+
+        Ohne übergebenen Namen wird er im Terminal abgefragt.
+        """
         print("\n--- Spiel beendet ---")
-        nutzername = input("Bitte deinen Nutzernamen eingeben: ").strip()
+
+        if nutzername is None:
+            nutzername = input("Bitte deinen Nutzernamen eingeben: ").strip()
 
         if not nutzername:
             nutzername = "Mr. Nobody"  # Standardname, falls kein Name eingegeben wurde
 
-        scores = self.alle_highscores_laden()
-
-        # Neuer Eintrag
-        neuer_eintrag = {"name": nutzername, "punkte": self.punkte}
-        scores.append(neuer_eintrag)
-
-        with open(self.dateiname, "w", encoding="utf-8") as datei:
-            json.dump(scores, datei, ensure_ascii=False, indent=4)
+        scores = self.speichern(nutzername)
 
         print(f"Punkte für {nutzername} ({self.punkte} SP) gespeichert!")
         self.rangliste_anzeigen(scores)

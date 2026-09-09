@@ -219,3 +219,7 @@ __marimo__/
 
 # Files to be ignored
 src/zz_main.py
+
+# Spielstaende: gehoeren jedem Spieler selbst, nicht ins Repository
+src/nutzer.json
+highscores.json

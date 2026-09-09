@@ -60,13 +60,19 @@ def terminal_aktion_dialog(aktionen):
         input("Enter drücken, um erneut eine Aktion auszuwählen...")
 
 
+MENUEPUNKTE = {
+    "1": "auftrag",
+    "2": "aufsatz",
+    "3": "laden",
+    "4": "wartung",
+    "5": "karte",
+    "6": "rangliste",
+    "0": "beenden",
+}
+
+
 def menu_auswahl(auswahl):
-    if auswahl == "1":
-        return "auftrag"
-    elif auswahl == "0":
-        return "beenden"
-    else:
-        return "Falsche Eingabe!"
+    return MENUEPUNKTE.get(auswahl, "Falsche Eingabe!")
 
 
 def weitere_aktion_auswaehlen(auswahl):
@@ -76,53 +82,92 @@ def weitere_aktion_auswaehlen(auswahl):
         return False
 
 
-def terminal_menu(raumsteuerung, aktionen, akku):
+def meldungen_ausgeben(meldungen):
+    """Gibt die Rückmeldungen des Spiels im Terminal aus."""
+    for meldung in meldungen:
+        print(meldung)
+
+
+def aktionen_waehlen(spiel):
+    """Fragt eine oder zwei Aktionen für den Auftrag ab (#24)."""
+    ausgewaehlte_aktionen = [terminal_aktion_dialog(spiel.aktionen)]
+
+    while True:
+        auswahl = input("Weitere Aktion (j/n): ").strip().lower()
+        weitere_aktion = weitere_aktion_auswaehlen(auswahl)
+        if weitere_aktion is None:
+            print("Bitte 'j' oder 'n' eingeben.")
+            continue
+        break
+
+    if weitere_aktion:
+        zweite_aktion = terminal_aktion_dialog(spiel.aktionen)
+        if spiel.aktionen.aktionen_bereits_gewaehlt(
+            ausgewaehlte_aktionen, zweite_aktion
+        ):
+            print("Aktion bereits gewählt.")
+        else:
+            ausgewaehlte_aktionen.append(zweite_aktion)
+
+    return ausgewaehlte_aktionen
+
+
+def aufsatz_dialog(spiel):
+    """Lässt den Nutzer Aufsatz 1 oder 2 wählen (#27)."""
+    print("\n1 - Aufsatz 1 (für Fusseln)")
+    print("2 - Aufsatz 2 (für Staubansammlungen)")
+    auswahl = input("\nAufsatz wählen: ").strip()
+
+    if auswahl.isdigit():
+        return spiel.aufsatz_waehlen(int(auswahl))
+    return spiel.aufsatz_waehlen(auswahl)
+
+
+def terminal_menu(spiel):
+    """Strukturiertes Menü zur Steuerung des Roboters (#24)."""
     while True:
         print("\n===== iSlave =====")
-        print("1 - Auftrag starten")
+        print(spiel.statuszeile())
+        print(spiel.ausruestungszeile())
+        print("\n1 - Auftrag starten")
+        print("2 - Aufsatz wählen")
+        print("3 - Akku laden")
+        print("4 - Wartung durchführen")
+        print("5 - Karte anzeigen")
+        print("6 - Rangliste anzeigen")
         print("0 - Beenden")
-        auswahl = input("\nAuswahl: ")
-        ergebnis = menu_auswahl(auswahl)
+
+        ergebnis = menu_auswahl(input("\nAuswahl: ").strip())
 
         if ergebnis == "Falsche Eingabe!":
             print(ergebnis)
             continue
 
+        if ergebnis == "beenden":
+            meldungen_ausgeben(spiel.beenden())
+            spiel.highscore.rangliste_anzeigen()
+            return spiel
+
         if ergebnis == "auftrag":
-            ausgewaehlte_aktionen = []
+            terminal_raum_dialog(spiel.raumsteuerung)
+            meldungen_ausgeben(spiel.raum_wechseln(spiel.aktueller_raum))
+            meldungen_ausgeben(spiel.auftrag_ausfuehren(aktionen_waehlen(spiel)))
 
-            terminal_raum_dialog(raumsteuerung)
+        elif ergebnis == "aufsatz":
+            meldungen_ausgeben(aufsatz_dialog(spiel))
 
-            erste_aktion = terminal_aktion_dialog(aktionen)
-            ausgewaehlte_aktionen.append(erste_aktion)
-            # print(ausgewaehlte_aktionen)
+        elif ergebnis == "laden":
+            meldungen_ausgeben(spiel.akku_laden())
 
-            auswahl_weitere_aktion = input("Weitere Aktion (j/n): ")
-            weitere_aktion = weitere_aktion_auswaehlen(auswahl_weitere_aktion)
+        elif ergebnis == "wartung":
+            meldungen_ausgeben(spiel.wartung_ausfuehren())
 
-            if weitere_aktion is True:
-                zweite_aktion = terminal_aktion_dialog(aktionen)
+        elif ergebnis == "karte":
+            print()
+            print(spiel.karte_als_text())
 
-                if aktionen.aktionen_bereits_gewaehlt(
-                    ausgewaehlte_aktionen, zweite_aktion
-                ):
-                    print("Aktion bereits gewählt.")
-                else:
-                    ausgewaehlte_aktionen.append(zweite_aktion)
-
-            sortierte_aktionen = aktionen.reihenfolge_festlegen(ausgewaehlte_aktionen)
-
-            for aktion in sortierte_aktionen:
-                ergebnis = aktionen.aktion_ausfuehren(aktion)
-                print(f"\nAktion ausgeführt: {ergebnis}")
-
-                akku.verbrauchen(10)
-
-        elif ergebnis == "aktion":
-            if raumsteuerung.aktueller_raum is None:
-                print("Bitte zuerst eine Raum auwählen.")
-            else:
-                terminal_aktion_dialog(aktionen)
+        elif ergebnis == "rangliste":
+            spiel.highscore.rangliste_anzeigen()
 
         elif ergebnis == "beenden":
             return
